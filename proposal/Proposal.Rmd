@@ -1,6 +1,6 @@
 ---
 title: "Exploring Air Quality in the US since 1960"
-author: Furred Flies (Caleb Weiss, Eva Wu, Jimin Han)
+author: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 output: github_document
 ---
 
