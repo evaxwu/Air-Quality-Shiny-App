@@ -1,0 +1,42 @@
+---
+title: "R Notebook"
+output: github_document
+---
+
+```{r}
+library(RAQSAPI)
+library(tidyverse)
+library(stringr)
+library(sjmisc)
+
+# Please follow instructions in data README to set up a RAQSAPI account so that you are able to run this line of code with YOUR email and key
+# RAQSAPI::aqs_credentials("email", "key")
+
+# To read RAQSAPI documentation
+# RShowDoc(what="RAQSAPIvignette", type="html", package="RAQSAPI")
+```
+
+
+```{r}
+# Loading California state data
+# Data for California from 2011 to 2021 - only year mattters in bdate/edate variables
+CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
+
+head(CA1)
+
+# No need to include the below in proposal—just say that we will repeat the above code for ech 10-year increment from 1971 to 2021, and for all 50 states plus DC
+# Data for California from 2001 to 2011 - only year matters in bdate/edate variables
+CA2 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20010101", format = "%Y%m%d"), edate = as.Date("20100101", format = "%Y%m%d"), "06")
+
+# Data for California from 1991 to 2001 - only year matters in bdate/edate variables
+CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19910101", format = "%Y%m%d"), edate = as.Date("20000101", format = "%Y%m%d"), "06")
+
+# Data for California from 1981 to 1991 - only year matters in bdate/edate variables
+CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19810101", format = "%Y%m%d"), edate = as.Date("19900101", format = "%Y%m%d"), "06")
+
+# Data for California from 1971 to 1981 - only year matters in bdate/edate variables
+CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19710101", format = "%Y%m%d"), edate = as.Date("19800101", format = "%Y%m%d"), "06")
+
+
+```
+
