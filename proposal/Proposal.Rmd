@@ -10,7 +10,8 @@ We have chosen to create an interactive and/or animated spatio-temporal visualiz
 
 ## Loading Dataset
 
-```{r, message=FALSE, warning=FALSE, echo=FALSE}
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo = FALSE)
 library(RAQSAPI)
 library(tidyverse)
 library(stringr)
@@ -18,17 +19,14 @@ library(sjmisc)
 ```
 
 
-```{r}
-library(RAQSAPI)
+```{r load-data}
 RAQSAPI::aqs_credentials("hanjim83@gmail.com", "dunmouse24")
 # Loading California state data
 # Data for California from 2011 to 2021 - only year matters in bdate/edate variables
 CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
 
 head(CA1)
-
 ```
-
  
 ## Description of our goals
 
@@ -38,11 +36,11 @@ Our primary goal is to then use this data in order to construct an interactive a
 
 ## Weekly Plan of Attack:
  
-* Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle data into desired structure and calculate AQI Scores from data (Caleb). Edit codebook (Eva). Learn how to use Shiny (everyone).
+* Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle data into desired structure and calculate AQI Scores from data (Caleb). Create README files (Jimin). Edit codebook (Eva). Learn how to use Shiny (everyone).
 
 * Week 2 (May 19-May 25): Construct visualization of data using Shiny (everyone). Consider adding layers depicting change in prevalence of potentially contributing factors to poor Air Quality over time (everyone).
 
-* Week 3 (May 26-June 1): Complete Write-Up and Presentation (using xaringen or Shiny) (everyone). Edit shiny README (Jimin). Rehearse Presentation (everyone).
+* Week 3 (May 26-June 1): Complete Write-Up and Presentation (using xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
 
 ## Repo organization 
 
