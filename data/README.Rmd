@@ -7,7 +7,7 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This is the README document explaining the data that we will use for this project.
+This is the README document explaining the data that we will use for this project. The [data-cleaning-prep.Rmd](data-cleaning-prep.Rmd) file outlines the code we used to obtain and clean the data.
 
 Our data is from the US EPA Air Quality System API, called RAQSAPI and developed by Clinton Mccrowey, a Physical Scientist with the US EPA. This is a very complex API with concentration data on over 25 different air pollutants, on the county, state, Core Based Statistical Area, air monitoring site, primary quality assurance organization, and monitoring agency levels (the latter three are simply different administrative bodies which collect/oversee air quality data; the third is a geographical unit defined by the US Census Bureau), which includes annual, quarterly, and daily summaries stretching back until the early 1960s.
 
