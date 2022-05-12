@@ -10,16 +10,6 @@ whether our visualization will be interactive, animated, or both).
 
 ## Loading Dataset
 
-``` r
-library(RAQSAPI)
-RAQSAPI::aqs_credentials("hanjim83@gmail.com", "dunmouse24")
-# Loading California state data
-# Data for California from 2011 to 2021 - only year matters in bdate/edate variables
-CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
-
-head(CA1)
-```
-
     ## # A tibble: 6 × 42
     ##   state_code county_code site_number parameter_code   poc latitude longitude
     ##   <chr>      <chr>       <chr>       <chr>          <int>    <dbl>     <dbl>
@@ -79,7 +69,8 @@ factors.
 
 -   Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle
     data into desired structure and calculate AQI Scores from data
-    (Caleb). Edit codebook (Eva). Learn how to use Shiny (everyone).
+    (Caleb). Create README files (Jimin). Edit codebook (Eva). Learn how
+    to use Shiny (everyone).
 
 -   Week 2 (May 19-May 25): Construct visualization of data using Shiny
     (everyone). Consider adding layers depicting change in prevalence of
@@ -87,8 +78,7 @@ factors.
     (everyone).
 
 -   Week 3 (May 26-June 1): Complete Write-Up and Presentation (using
-    xaringen or Shiny) (everyone). Edit shiny README (Jimin). Rehearse
-    Presentation (everyone).
+    xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
 
 ## Repo organization
 
