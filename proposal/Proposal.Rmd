@@ -26,6 +26,7 @@ RAQSAPI::aqs_credentials("hanjim83@gmail.com", "dunmouse24")
 CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
 ```
 
+Our data is explained further below and in the README in the data folder. It includes 42 columns (although we will certainly cut this down as soon as we know more about the data), and will include hundreds of thousands of rows once we have loaded all of the necessary data for each state (50 years of air quality data x 50 states + DC is a lot of data).
 
 `r knitr::kable(head(CA1))` 
  
