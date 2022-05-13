@@ -1,12 +1,31 @@
 Exploring Air Quality in the US since 1960
 ================
-Furred Flies (Caleb Weiss, Eva Wu, Jimin Han)
+Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
 ## High-level goal
 
 We have chosen to create an interactive and/or animated spatio-temporal
 visualization on a topic of interest to us (we have not yet determined
 whether our visualization will be interactive, animated, or both).
+
+## Loading Dataset
+
+    ## # A tibble: 6 × 42
+    ##   state_code county_code site_number parameter_code   poc latitude longitude
+    ##   <chr>      <chr>       <chr>       <chr>          <int>    <dbl>     <dbl>
+    ## 1 06         073         1006        44201              1     32.8     -117.
+    ## 2 06         073         1006        44201              1     32.8     -117.
+    ## 3 06         073         1006        44201              1     32.8     -117.
+    ## 4 06         073         1006        44201              1     32.8     -117.
+    ## 5 06         073         1006        44201              1     32.8     -117.
+    ## 6 06         073         1006        44201              1     32.8     -117.
+    ## # … with 35 more variables: datum <chr>, parameter <chr>,
+    ## #   sample_duration <chr>, sample_duration_code <chr>,
+    ## #   sample_duration_type <chr>, pollutant_standard <chr>, year <int>,
+    ## #   quarter <chr>, units_of_measure <chr>, event_type <chr>,
+    ## #   observation_count <int>, observation_percent <chr>, arithmetic_mean <dbl>,
+    ## #   minimum_value <chr>, maximum_value <chr>, quarterly_criteria_met <chr>,
+    ## #   actual_days_gt_std <int>, estimated_days_gt_std <chr>, …
 
 ## Description of our goals
 
@@ -24,10 +43,13 @@ bodies which collect/oversee air quality data; the third is a
 geographical unit defined by the US Census Bureau), which includes
 annual, quarterly, and daily summaries stretching back until the early
 1960s. We will use county-level quarterly data from each state on the
-seven components which go into forming an Air Quality Index score
-(including ) over the past 50 years, in order to form an accurate
-picture of how air quality has changed throughout the United States
-during that time.
+six components which go into forming an Air Quality Index score
+(including Ozone, PM2.5, PM10, CO, SO2, and NO2) over the past 50 years,
+in order to form an accurate picture of how air quality has changed
+throughout the United States during that time. Each dataset has 42
+columns, but we will subset our datasets accordingly to include only the
+variables we want. The number of rows all vary depending on the time
+range and the state, but generally it’s in the 50.000 - 100,000 range.
 
 Our primary goal is to then use this data in order to construct an
 interactive and/or animated map of Air Quality in the United States over
@@ -47,8 +69,8 @@ factors.
 
 -   Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle
     data into desired structure and calculate AQI Scores from data
-    (Caleb). Edit codebook (Eva). Learn how to use Shiny (everyone).
-    etc.
+    (Caleb). Create README files (Jimin). Edit codebook (Eva). Learn how
+    to use Shiny (everyone).
 
 -   Week 2 (May 19-May 25): Construct visualization of data using Shiny
     (everyone). Consider adding layers depicting change in prevalence of
@@ -56,8 +78,7 @@ factors.
     (everyone).
 
 -   Week 3 (May 26-June 1): Complete Write-Up and Presentation (using
-    xaringen or Shiny) (everyone). Edit shiny README (Jimin). Rehearse
-    Presentation (everyone).
+    xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
 
 ## Repo organization
 

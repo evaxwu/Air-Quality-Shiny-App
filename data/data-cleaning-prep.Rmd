@@ -3,6 +3,8 @@ title: "R Notebook"
 output: github_document
 ---
 
+This file contains the code we used to obtain and clean the data.
+
 ```{r}
 library(RAQSAPI)
 library(tidyverse)
@@ -36,7 +38,4 @@ CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "4
 
 # Data for California from 1971 to 1981 - only year matters in bdate/edate variables
 CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19710101", format = "%Y%m%d"), edate = as.Date("19800101", format = "%Y%m%d"), "06")
-
-
 ```
-
