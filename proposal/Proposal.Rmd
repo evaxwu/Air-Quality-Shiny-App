@@ -1,5 +1,5 @@
 ---
-title: "Exploring Air Quality in the US since 1960"
+title: "Exploring Air Quality in the US since 1971"
 author: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 output: github_document
 ---
@@ -24,9 +24,11 @@ RAQSAPI::aqs_credentials("hanjim83@gmail.com", "dunmouse24")
 # Loading California state data
 # Data for California from 2011 to 2021 - only year matters in bdate/edate variables
 CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
-
-head(CA1)
 ```
+
+
+`r knitr::kable(head(CA1))` 
+ 
  
 ## Description of our goals
 
