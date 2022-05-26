@@ -11,9 +11,11 @@ include our write-up.
     knitted MarkDown documents which contain the information in this
     proposal.
 
--   [data](data) folder. This folder contains RMarkDown documents used
-    to load, examine, and wrangle data from the RAQSAPI and to load data
-    from other sources, and csvs of data loaded from other sources.
+-   [data_cleaning_description](data_cleaning_description) folder. This
+    folder contains RMarkDown documents used to load, examine, and
+    wrangle data from the RAQSAPI and to load data from other sources,
+    the csv files of data loaded from other sources, as well as the
+    README file consisting of the codebook.
 
 -   [shiny](shiny) folder. This folder contains Shiny documents used to
     construct our data visualization. (We have yet to learn how to use
