@@ -48,12 +48,17 @@ CA1_splice <- CA1 |>
            arithmetic_mean,state,cbsa_code,cbsa)) |>
   mutate(year_qtr = paste(year, quarter, sep = "_")) |>
   mutate(row = row_number()) |>
-  pivot_wider(names_from = parameter, values_from = arithmetic_mean)
+  pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
+  rename(PM2.5 = "PM2.5 - Local Conditions", CO = "Carbon monoxide", 
+         NO2 = "Nitrogen dioxide (NO2)", SO2 = "Sulfur dioxide", 
+         PM10 = "PM10 Total 0-10um STP")
 
 CA1_avg <- CA1_splice |>
-  mutate(Ozone = round(CA1_splice$Ozone, 3), "PM2.5 - Local Conditions" = 
-           round(CA1_splice$`PM2.5 - Local Conditions`, 1),
-         )     
+  mutate(Ozone = round(CA1_splice$Ozone, 3), PM2.5 = round(CA1_splice$PM2.5, 1),
+         CO = round(CA1_splice$CO, 1), NO2 = round(CA1_splice$NO2, 0),
+         SO2 = round(CA1_splice$SO2, 0), PM10 = round(CA1_splice$PM10, 0))
+
+write_csv(CA1_avg, "CA1_avg.csv")
   
   
   
