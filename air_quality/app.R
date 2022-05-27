@@ -2,12 +2,25 @@ library(shiny)
 library(tidyverse)
 library(shinythemes)
 library(thematic)
+library(urbnmapr)
+library()
+
 
 # Load data --------------------------------------------------------------------
 air_quality <- read_csv("data/CA1_avg.csv", show_col_types = FALSE)
+air_overall <- read_csv("data/CA_ovberall2.csv", show_col_types = FALSE)
+
 
 pollutant_choices <- c("PM2.5", "Acceptable PM2.5 AQI & Speciation Mass", "PM10", 
                        "CO", "Ozone", "NO2", "SO2")
+
+# add fips code
+air_overall$fips<- with(air_overall, paste0(state_code, county_code))
+air_overall <- air_overall %>%
+  select(year, state, county, latitude, longitude, Ozone_rd, PM10_rd, PM2.5_rd, 
+         CO_rd, NO2_rd, SO2_rd, pollutant, fips)
+colnames(air_overall) <- c("year", "state", 'county', 'latitude', 'longitude',
+                           'Ozone', 'PM10', 'PM2.5', 'CO', 'NO2', 'SO2', 'pollutant', 'fips')
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -76,7 +89,33 @@ server <- function(input, output) {
   })
  
   output$map <- renderPlot({
-        
+    
+    counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
+    states_sf <- get_urbn_map(map = "states", sf = TRUE)
+    
+    #merge using fips
+    counties_air <- inner_join(counties_sf, year_filtered, by=c("county_fips"="fips"))
+    # wrangle to get mean vlue for multiple values in a county
+    counties_air <- counties_air %>%
+      group_by(county_fips, .drop = FALSE) %>%
+      summarise(avg = mean(input$pollutant))
+    
+    counties_air %>%
+      ggplot() +
+      geom_sf(mapping = aes(fill = avg), color = NA) +
+      coord_sf(datum = NA) +   
+      scale_fill_gradient(name = "Pollutants", low='pink', high='navyblue', 
+                          na.value="white") +
+      theme_bw() + theme(legend.position="bottom", panel.border = element_blank())
+    
+  })
+  
+  year_filtered <- reactive({
+    
+    air_overall %>%
+      filter(year == input$year & pollutant %in% input$pollutant) %>%
+      unique()
+   
   })
   
   state_filtered <- reactive({
