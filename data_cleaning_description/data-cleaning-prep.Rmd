@@ -12,6 +12,8 @@ library(stringr)
 library(sjmisc)
 library(keyring)
 library(reprex)
+library(con2aqi)
+library(stringr)
 
 # Please follow instructions in data README to set up a RAQSAPI account so that you are able to run this line of code with YOUR email and key
 # RAQSAPI::aqs_credentials("email", "key")
@@ -34,33 +36,67 @@ aqs_classes()
 
 # Loading California state data
 # Data for California from 2011 to 2021 - only year matters in bdate/edate variables
-CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
 
-# CA1_splice <- CA1 |>
-#   select(c(year,quarter,sample_duration,sample_duration_code,sample_duration_type,
-#            state_code,county_code,county,latitude,longitude,parameter,units_of_measure,
-#            arithmetic_mean,maximum_value,state,cbsa_code,cbsa)) |>
-#   mutate(row = row_number()) |>
-#   mutate(year_qtr = paste(year, quarter, sep = "_"))
+CA1 <- aqs_annualsummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
 
 CA1_splice <- CA1 |>
-  select(c(year,quarter,state_code,county_code,county,latitude,longitude,parameter,
-           arithmetic_mean,state,cbsa_code,cbsa)) |>
-  mutate(year_qtr = paste(year, quarter, sep = "_")) |>
+  select(c(year,state_code,latitude,longitude,parameter,arithmetic_mean,state,
+           pollutant_standard,units_of_measure,county_code,county)) |>
   mutate(row = row_number()) |>
+  filter(pollutant_standard %in% c("PM25 24-hour 1997", "CO 1-hour 1971", 
+                                   "Ozone 1-hour 1979", "NO2 1-hour 2010", 
+                                   "SO2 24-hour 1971", "PM10 24-hour 2006")) |>
+  select(!pollutant_standard) |>
   pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
   rename(PM2.5 = "PM2.5 - Local Conditions", CO = "Carbon monoxide", 
          NO2 = "Nitrogen dioxide (NO2)", SO2 = "Sulfur dioxide", 
-         PM10 = "PM10 Total 0-10um STP")
+         PM10 = "PM10 Total 0-10um STP") |>
+  select(!row) |>
+  mutate(row = row_number()) |>
+  mutate(PM10 = PM10 * 0.6)
 
 CA1_avg <- CA1_splice |>
-  mutate(Ozone = round(CA1_splice$Ozone, 3), PM2.5 = round(CA1_splice$PM2.5, 1),
-         CO = round(CA1_splice$CO, 1), NO2 = round(CA1_splice$NO2, 0),
-         SO2 = round(CA1_splice$SO2, 0), PM10 = round(CA1_splice$PM10, 0))
+  mutate(Ozone_rd = round(CA1_splice$Ozone, 3), PM2.5_rd = round(CA1_splice$PM2.5, 1),
+         CO_rd = round(CA1_splice$CO, 1), NO2_rd = round(CA1_splice$NO2, 0),
+         SO2_rd = round(CA1_splice$SO2, 0), PM10_rd = round(CA1_splice$PM10, 0)) |>
+  mutate_all(~replace(., is.na(.), 0))
 
-write_csv(CA1_avg, "CA1_avg.csv")
-  
-  
+Ozone_index <- tibble(con2aqi("o3", con = CA1_avg$Ozone_rd, type = "1h")) |>
+  mutate(row = row_number()) |>
+  rename(Ozone_index = `con2aqi("o3", con = CA1_avg$Ozone_rd, type = "1h")`)
+PM2.5_index <- tibble(con2aqi("pm25", con = CA1_avg$PM2.5_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM2.5_index = `con2aqi("pm25", con = CA1_avg$PM2.5_rd, type = NULL)`)
+CO_index <- tibble(con2aqi("co", con = CA1_avg$CO_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(CO_index = `con2aqi("co", con = CA1_avg$CO_rd, type = NULL)`)
+NO2_index <- tibble(con2aqi("no2", con = CA1_avg$NO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(NO2_index_index = `con2aqi("no2", con = CA1_avg$NO2_rd, type = NULL)`)
+SO2_index <- tibble(con2aqi("so2", con = CA1_avg$SO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(SO2_index = `con2aqi("so2", con = CA1_avg$SO2_rd, type = NULL)`)
+PM10_index <- tibble(con2aqi("pm10", con = CA1_avg$PM10_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM10_index = `con2aqi("pm10", con = CA1_avg$PM10_rd, type = NULL)`)
+
+CA1_avg2 <- merge(CA1_avg,c(Ozone_index,PM2.5_index,CO_index,NO2_index,SO2_index,PM10_index), by = "row") |>
+  select(!c(row.1,row.2,row.3,row.4,row.5)) |>
+  group_by(year,county) 
+
+
+|>
+  summarise(AQI = max(Ozone_index,PM2.5_index,CO_index,NO2_index,SO2_index,PM10_index))
+
+|>
+  mutate(row = row_number()) |>
+  rename(PM10_index = `con2aqi("pm10", con = CA1_avg$PM10_rd, type = NULL)`)
+
+View(CA1)
+
+pollutant_standards <- tibble(unique(CA1$pollutant_standard)) |>
+  rename(pollutant_standard = "unique(CA1$pollutant_standard)") |>
+  filter(!str_detect(pollutant_standard, "Annual"))
   
 v <- round(CA1_splice$Ozone, 3)
   
@@ -71,15 +107,194 @@ v <- round(CA1_splice$Ozone, 3)
 head(CA1)
 
 # No need to include the below in proposal—just say that we will repeat the above code for each 10-year increment from 1971 to 2021, and for all 50 states plus DC
+
+
 # Data for California from 2001 to 2011 - only year matters in bdate/edate variables
-CA2 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20010101", format = "%Y%m%d"), edate = as.Date("20100101", format = "%Y%m%d"), "06")
+CA2 <- aqs_annualsummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20010101", format = "%Y%m%d"), edate = as.Date("20100101", format = "%Y%m%d"), "06")
+
+CA2_splice <- CA2 |>
+  select(c(year,state_code,latitude,longitude,parameter,arithmetic_mean,state,
+           pollutant_standard,units_of_measure,county_code,county)) |>
+  mutate(row = row_number()) |>
+  filter(pollutant_standard %in% c("PM25 24-hour 1997", "CO 1-hour 1971", 
+                                   "Ozone 1-hour 1979", "NO2 1-hour 2010", 
+                                   "SO2 24-hour 1971", "PM10 24-hour 2006")) |>
+  select(!pollutant_standard) |>
+  pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
+  rename(PM2.5 = "PM2.5 - Local Conditions", CO = "Carbon monoxide", 
+         NO2 = "Nitrogen dioxide (NO2)", SO2 = "Sulfur dioxide", 
+         PM10 = "PM10 Total 0-10um STP") |>
+  select(!row) |>
+  mutate(row = row_number()) |>
+  mutate(PM10 = PM10 * 0.6)
+
+CA2_avg <- CA2_splice |>
+  mutate(Ozone_rd = round(CA2_splice$Ozone, 3), PM2.5_rd = round(CA2_splice$PM2.5, 1),
+         CO_rd = round(CA2_splice$CO, 1), NO2_rd = round(CA2_splice$NO2, 0),
+         SO2_rd = round(CA2_splice$SO2, 0), PM10_rd = round(CA2_splice$PM10, 0)) |>
+  mutate_all(~replace(., is.na(.), 0))
+
+Ozone_index <- tibble(con2aqi("o3", con = CA2_avg$Ozone_rd, type = "1h")) |>
+  mutate(row = row_number()) |>
+  rename(Ozone_index = `con2aqi("o3", con = CA2_avg$Ozone_rd, type = "1h")`)
+PM2.5_index <- tibble(con2aqi("pm25", con = CA2_avg$PM2.5_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM2.5_index = `con2aqi("pm25", con = CA2_avg$PM2.5_rd, type = NULL)`)
+CO_index <- tibble(con2aqi("co", con = CA2_avg$CO_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(CO_index = `con2aqi("co", con = CA2_avg$CO_rd, type = NULL)`)
+NO2_index <- tibble(con2aqi("no2", con = CA2_avg$NO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(NO2_index_index = `con2aqi("no2", con = CA2_avg$NO2_rd, type = NULL)`)
+SO2_index <- tibble(con2aqi("so2", con = CA2_avg$SO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(SO2_index = `con2aqi("so2", con = CA2_avg$SO2_rd, type = NULL)`)
+PM10_index <- tibble(con2aqi("pm10", con = CA2_avg$PM10_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM10_index = `con2aqi("pm10", con = CA2_avg$PM10_rd, type = NULL)`)
+
+CA2_avg2 <- merge(CA2_avg,c(Ozone_index,PM2.5_index,CO_index,NO2_index,SO2_index,PM10_index), by = "row") |>
+  select(!c(row.1,row.2,row.3,row.4,row.5)) |>
+  group_by(year,county) 
 
 # Data for California from 1991 to 2001 - only year matters in bdate/edate variables
-CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19910101", format = "%Y%m%d"), edate = as.Date("20000101", format = "%Y%m%d"), "06")
+CA3 <- aqs_annualsummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19910101", format = "%Y%m%d"), edate = as.Date("20000101", format = "%Y%m%d"), "06")
+
+CA3_splice <- CA3 |>
+  select(c(year,state_code,latitude,longitude,parameter,arithmetic_mean,state,
+           pollutant_standard,units_of_measure,county_code,county)) |>
+  mutate(row = row_number()) |>
+  filter(pollutant_standard %in% c("PM25 24-hour 1997", "CO 1-hour 1971", 
+                                   "Ozone 1-hour 1979", "NO2 1-hour 2010", 
+                                   "SO2 24-hour 1971", "PM10 24-hour 2006")) |>
+  select(!pollutant_standard) |>
+  pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
+  rename(PM2.5 = "PM2.5 - Local Conditions", CO = "Carbon monoxide", 
+         NO2 = "Nitrogen dioxide (NO2)", SO2 = "Sulfur dioxide", 
+         PM10 = "PM10 Total 0-10um STP") |>
+  select(!row) |>
+  mutate(row = row_number()) |>
+  mutate(PM10 = PM10 * 0.6)
+
+CA3_avg <- CA3_splice |>
+  mutate(Ozone_rd = round(CA3_splice$Ozone, 3), PM2.5_rd = round(CA3_splice$PM2.5, 1),
+         CO_rd = round(CA3_splice$CO, 1), NO2_rd = round(CA3_splice$NO2, 0),
+         SO2_rd = round(CA3_splice$SO2, 0), PM10_rd = round(CA3_splice$PM10, 0)) |>
+  mutate_all(~replace(., is.na(.), 0))
+
+Ozone_index <- tibble(con2aqi("o3", con = CA3_avg$Ozone_rd, type = "1h")) |>
+  mutate(row = row_number()) |>
+  rename(Ozone_index = `con2aqi("o3", con = CA3_avg$Ozone_rd, type = "1h")`)
+PM2.5_index <- tibble(con2aqi("pm25", con = CA3_avg$PM2.5_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM2.5_index = `con2aqi("pm25", con = CA3_avg$PM2.5_rd, type = NULL)`)
+CO_index <- tibble(con2aqi("co", con = CA3_avg$CO_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(CO_index = `con2aqi("co", con = CA3_avg$CO_rd, type = NULL)`)
+NO2_index <- tibble(con2aqi("no2", con = CA3_avg$NO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(NO2_index_index = `con2aqi("no2", con = CA3_avg$NO2_rd, type = NULL)`)
+SO2_index <- tibble(con2aqi("so2", con = CA3_avg$SO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(SO2_index = `con2aqi("so2", con = CA3_avg$SO2_rd, type = NULL)`)
+PM10_index <- tibble(con2aqi("pm10", con = CA3_avg$PM10_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM10_index = `con2aqi("pm10", con = CA3_avg$PM10_rd, type = NULL)`)
+
+CA3_avg2 <- merge(CA3_avg,c(Ozone_index,PM2.5_index,CO_index,NO2_index,SO2_index,PM10_index), by = "row") |>
+  select(!c(row.1,row.2,row.3,row.4,row.5)) |>
+  group_by(year,county) 
 
 # Data for California from 1981 to 1991 - only year matters in bdate/edate variables
-CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19810101", format = "%Y%m%d"), edate = as.Date("19900101", format = "%Y%m%d"), "06")
+CA4 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19810101", format = "%Y%m%d"), edate = as.Date("19900101", format = "%Y%m%d"), "06")
+
+CA4_splice <- CA4 |>
+  select(c(year,state_code,latitude,longitude,parameter,arithmetic_mean,state,
+           pollutant_standard,units_of_measure,county_code,county)) |>
+  mutate(row = row_number()) |>
+  filter(pollutant_standard %in% c("CO 1-hour 1971", 
+                                   "Ozone 1-hour 1979", "NO2 1-hour 2010", 
+                                   "SO2 24-hour 1971", "PM10 24-hour 2006")) |>
+  select(!pollutant_standard) |>
+  pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
+  rename(CO = "Carbon monoxide", 
+         NO2 = "Nitrogen dioxide (NO2)", SO2 = "Sulfur dioxide", 
+         PM10 = "PM10 Total 0-10um STP") |>
+  select(!row) |>
+  mutate(row = row_number()) |>
+  mutate(PM10 = PM10 * 0.6)
+
+CA4_avg <- CA4_splice |>
+  mutate(Ozone_rd = round(CA4_splice$Ozone, 3),
+         CO_rd = round(CA4_splice$CO, 1), NO2_rd = round(CA4_splice$NO2, 0),
+         SO2_rd = round(CA4_splice$SO2, 0), PM10_rd = round(CA4_splice$PM10, 0)) |>
+  mutate_all(~replace(., is.na(.), 0))
+
+Ozone_index <- tibble(con2aqi("o3", con = CA4_avg$Ozone_rd, type = "1h")) |>
+  mutate(row = row_number()) |>
+  rename(Ozone_index = `con2aqi("o3", con = CA4_avg$Ozone_rd, type = "1h")`)
+CO_index <- tibble(con2aqi("co", con = CA4_avg$CO_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(CO_index = `con2aqi("co", con = CA4_avg$CO_rd, type = NULL)`)
+NO2_index <- tibble(con2aqi("no2", con = CA4_avg$NO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(NO2_index_index = `con2aqi("no2", con = CA4_avg$NO2_rd, type = NULL)`)
+SO2_index <- tibble(con2aqi("so2", con = CA4_avg$SO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(SO2_index = `con2aqi("so2", con = CA4_avg$SO2_rd, type = NULL)`)
+PM10_index <- tibble(con2aqi("pm10", con = CA4_avg$PM10_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(PM10_index = `con2aqi("pm10", con = CA4_avg$PM10_rd, type = NULL)`)
+
+CA4_avg2 <- merge(CA4_avg,c(Ozone_index,CO_index,NO2_index,SO2_index,PM10_index), by = "row") |>
+  select(!c(row.1,row.2,row.3,row.4)) |>
+  group_by(year,county)
 
 # Data for California from 1971 to 1981 - only year matters in bdate/edate variables
-CA3 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19710101", format = "%Y%m%d"), edate = as.Date("19800101", format = "%Y%m%d"), "06")
+CA5 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("19710101", format = "%Y%m%d"), edate = as.Date("19800101", format = "%Y%m%d"), "06")
+
+unique(CA5$parameter)
+
+CA5_splice <- CA5 |>
+  select(c(year,state_code,latitude,longitude,parameter,arithmetic_mean,state,
+           pollutant_standard,units_of_measure,county_code,county)) |>
+  mutate(row = row_number()) |>
+  filter(pollutant_standard %in% c("CO 1-hour 1971", "Ozone 1-hour 1979", 
+                                   "NO2 1-hour 2010", "SO2 24-hour 1971")) |>
+  select(!pollutant_standard) |>
+  pivot_wider(names_from = parameter, values_from = arithmetic_mean) |>
+  rename(CO = "Carbon monoxide", NO2 = "Nitrogen dioxide (NO2)", 
+         SO2 = "Sulfur dioxide") |>
+  select(!row) |>
+  mutate(row = row_number())
+
+CA5_avg <- CA5_splice |>
+  mutate(Ozone_rd = round(CA5_splice$Ozone, 3), CO_rd = round(CA5_splice$CO, 1), 
+         NO2_rd = round(CA5_splice$NO2, 0), SO2_rd = round(CA5_splice$SO2, 0)) |>
+  mutate_all(~replace(., is.na(.), 0))
+
+Ozone_index <- tibble(con2aqi("o3", con = CA5_avg$Ozone_rd, type = "1h")) |>
+  mutate(row = row_number()) |>
+  rename(Ozone_index = `con2aqi("o3", con = CA5_avg$Ozone_rd, type = "1h")`)
+CO_index <- tibble(con2aqi("co", con = CA5_avg$CO_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(CO_index = `con2aqi("co", con = CA5_avg$CO_rd, type = NULL)`)
+NO2_index <- tibble(con2aqi("no2", con = CA5_avg$NO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(NO2_index_index = `con2aqi("no2", con = CA5_avg$NO2_rd, type = NULL)`)
+SO2_index <- tibble(con2aqi("so2", con = CA5_avg$SO2_rd, type = NULL)) |>
+  mutate(row = row_number()) |>
+  rename(SO2_index = `con2aqi("so2", con = CA5_avg$SO2_rd, type = NULL)`)
+
+CA5_avg2 <- merge(CA5_avg,c(Ozone_index,CO_index,NO2_index,SO2_index), by = "row") |>
+  select(!c(row.1,row.2,row.3)) |>
+  mutate(Ozone_index = 0,PM2.5_index = 0,PM10_index = 0) |>
+  group_by(year,county)
+
+# Rbind all years
+
+CA_overall <- rbind(CA1_avg2,CA2_avg2,CA3_avg2,CA4_avg2,CA5_avg2)
+
+write_csv(CA_overall, "CA_ovberall.csv")
+
 ```
