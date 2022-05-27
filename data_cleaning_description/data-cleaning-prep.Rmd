@@ -53,7 +53,7 @@ CA1_splice <- CA1 |>
 CA1_avg <- CA1_splice |>
   mutate(Ozone = round(CA1_splice$Ozone, 3), "PM2.5 - Local Conditions" = 
            round(CA1_splice$`PM2.5 - Local Conditions`, 1),
-         )
+         )     
   
   
   
