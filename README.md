@@ -17,10 +17,10 @@ include our write-up.
     the csv files of data loaded from other sources, as well as the
     README file consisting of the codebook.
 
--   [shiny](shiny) folder. This folder contains Shiny documents used to
-    construct our data visualization. (We have yet to learn how to use
-    Shiny, so some other documents may be included in this folder as
-    well.)
+-   [air_quality](air_quality) folder. This folder contains an
+    [app.R](app.R) document consisting of the code used to build the app
+    and a [data](air_quality/data) folder consisting of the data we used
+    to make visualizations in the app.
 
 -   We have a README.Rmd and README.md file for each folder. These files
     explain the structure of the repository. The README files in the
