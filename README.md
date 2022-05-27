@@ -18,9 +18,9 @@ include our write-up.
     README file consisting of the codebook.
 
 -   [air_quality](air_quality) folder. This folder contains an
-    [app.R](app.R) document consisting of the code used to build the app
-    and a [data](air_quality/data) folder consisting of the data we used
-    to make visualizations in the app.
+    [app.R](air_quality/app.R) document consisting of the code used to
+    build the app and a [data](air_quality/data) folder consisting of
+    the data we used to make visualizations in the app.
 
 -   We have a README.Rmd and README.md file for each folder. These files
     explain the structure of the repository. The README files in the
