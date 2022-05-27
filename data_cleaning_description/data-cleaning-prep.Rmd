@@ -295,6 +295,12 @@ CA5_avg2 <- merge(CA5_avg,c(Ozone_index,CO_index,NO2_index,SO2_index), by = "row
 
 CA_overall <- rbind(CA1_avg2,CA2_avg2,CA3_avg2,CA4_avg2,CA5_avg2)
 
+CA_overall2 <- CA_overall |>
+  pivot_longer(c(Ozone,NO2,PM2.5,PM10,CO,SO2), names_to = "pollutant", values_to = "arithmetic_mean") |>
+  filter(arithmetic_mean > 0)
+
 write_csv(CA_overall, "CA_ovberall.csv")
+
+write_csv(CA_overall2, "CA_ovberall2.csv")
 
 ```
