@@ -4,15 +4,14 @@ library(shinythemes)
 library(thematic)
 
 # Load data --------------------------------------------------------------------
-# df <- read_csv("data/air_quality.csv", show_col_types = FALSE)
+air_quality <- read_csv("data/CA1_avg.csv", show_col_types = FALSE)
 
-pollutant_choices <- c("PM2.5", "PM2.5 - Local Conditions", 
-                       "PM10 Total 0-10um STP", "Carbon monoxide (CO)", 
-                       "Ozone (O3)", "Sulfur dioxide (SO2)", "Nitrogen dioxide (NO2)")
+pollutant_choices <- c("PM2.5", "Acceptable PM2.5 AQI & Speciation Mass", "PM10", 
+                       "CO", "Ozone", "NO2", "SO2")
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
-  theme = shinytheme("yeti"),
+  theme = shinytheme("united"),
   titlePanel("Air Quality of U.S. Counties in 1971-2021"),
   "A Shiny app built by Caleb Weis, Eva Wu, and Jimin Han",
   br(), br(),
@@ -51,7 +50,7 @@ ui <- fluidPage(
             inputId = "state", 
             label = "Select up to 8 states:", 
             choices = state.name,
-            selected = "Illinois",
+            selected = "California",
             multiple = TRUE
           ),
           textOutput(outputId = "state_text"),
@@ -72,14 +71,25 @@ server <- function(input, output) {
   })
   
   output$state_text <- reactive({
-    paste("You've selected ", length(input$state), " states. Showing their air 
+    paste("You've selected ", length(input$state), " state(s). Showing their air 
           quality measured by ", input$pollutant, "across years...")
   })
  
   output$map <- renderPlot({
         
   })
+  
+  state_filtered <- reactive({
     
+    air_quality %>%
+      filter(state %in% input$state) %>%
+      select(year, quarter, state, year_qtr, input$pollutant) %>%
+      unique() %>%
+      group_by(year, state) %>%
+      summarize(air_qual_year = mean(PM2.5, na.rm = TRUE)) # need to make PM2.5 reproducible
+    
+  })
+  
   output$state_plot <- renderPlot({
     
     # verify only 8 or fewer states selected for optimal interpretation
@@ -90,10 +100,18 @@ server <- function(input, output) {
       )
     )
     
+    state_filtered() %>%
+      ggplot(aes(year, air_qual_year, color = state)) +
+      geom_line() +
+      theme_light() +
+      labs(title = paste("Air Quality Across Years"),
+           subtitle = paste("measured by PM2.5"),
+           x = "Year", y = "Air Quality", color = "State")
+    
   })
     
   output$data <- DT::renderDataTable({
-      
+    state_filtered()
   })
   
 }
