@@ -4,10 +4,14 @@ library(shinythemes)
 library(thematic)
 
 # Load data --------------------------------------------------------------------
-air_quality <- read_csv("data/CA1_avg.csv", show_col_types = FALSE)
 
-pollutant_choices <- c("PM2.5", "Acceptable PM2.5 AQI & Speciation Mass", "PM10", 
-                       "CO", "Ozone", "NO2", "SO2")
+air_quality <- read_csv("air_quality/data/CA_overall2.csv", show_col_types = FALSE) %>%
+  unique() %>%
+  select(year, state, state_code, county, county_code, latitude, longitude, pollutant, 
+         arithmetic_mean, units_of_measure) %>%
+  arrange(year, state, county, pollutant)
+
+pollutant_choices <- air_quality$pollutant %>% unique()
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -54,6 +58,7 @@ ui <- fluidPage(
             multiple = TRUE
           ),
           textOutput(outputId = "state_text"),
+          br(),
           plotOutput("state_plot")
           ), 
         tabPanel("Data", DT::dataTableOutput(outputId = "data"))
@@ -66,7 +71,7 @@ ui <- fluidPage(
 server <- function(input, output) {
 
   output$map_text <- reactive({
-    paste("This map shows the air quality across the U.S. in ", input$year, 
+    paste("This map shows the air quality across the U.S. in", input$year, 
           "measured by ", input$pollutant)
   })
   
@@ -82,11 +87,9 @@ server <- function(input, output) {
   state_filtered <- reactive({
     
     air_quality %>%
-      filter(state %in% input$state) %>%
-      select(year, quarter, state, year_qtr, input$pollutant) %>%
-      unique() %>%
-      group_by(year, state) %>%
-      summarize(air_qual_year = mean(PM2.5, na.rm = TRUE)) # need to make PM2.5 reproducible
+      filter(state %in% input$state & pollutant == input$pollutant) %>%
+      group_by(year, state, units_of_measure) %>%
+      summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
     
   })
   
@@ -104,9 +107,9 @@ server <- function(input, output) {
       ggplot(aes(year, air_qual_year, color = state)) +
       geom_line() +
       theme_light() +
-      labs(title = paste("Air Quality Across Years"),
-           subtitle = paste("measured by PM2.5"),
-           x = "Year", y = "Air Quality", color = "State")
+      labs(title = paste("Air Quality Across Years in ", paste(input$state, collapse = ",")),
+           subtitle = paste("measured by ", input$pollutant),
+           x = "Year", y = paste("Air Quality (", units_of_measure, ")"), color = "State")
     
   })
     
