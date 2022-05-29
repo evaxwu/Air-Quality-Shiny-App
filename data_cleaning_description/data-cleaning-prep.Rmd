@@ -587,54 +587,5 @@ CA5_avg2 <- merge(CA5_avg,c(Ozone_index,CO_index,NO2_index,SO2_index), by = "row
   select(!c(row.1,row.2,row.3)) |>
   mutate(Ozone_index = 0,PM2.5_index = 0,PM10_index = 0) |>
   group_by(year,county)
-
-# This is where we start to work with data from all years
-# First, we rbind all datasets together to form one large dataset for all years
-CA_overall <- rbind(CA1_avg2,CA2_avg2,CA3_avg2,CA4_avg2,CA5_avg2) |>
-  rename(NO2_index = NO2_index_index)
-
-# Pivot longer to ease with graphing—this way we can filter by pollutant
-CA_overall2 <- CA_overall |>
-  pivot_longer(c(Ozone,NO2,PM2.5,PM10,CO,SO2), names_to = "pollutant", values_to = "arithmetic_mean") |>
-  # get rid of placeholder columns
-  filter(arithmetic_mean > 0)
-
-# Create separate dataframe with only index columns
-CA_indices <- tibble(CA_overall2$Ozone_index, CA_overall2$PM2.5_index,
-                     CA_overall2$CO_index, CA_overall2$NO2_index, 
-                     CA_overall2$SO2_index, CA_overall2$PM10_index)
-
-# Collapse dataset horizontally by just taking the max from every row,
-# thereby ignoring all 0 placeholder values
-CA_indices2 <- CA_indices |>
-  mutate(AQI = rowMaxs(as.matrix(CA_indices))) |>
-  # Only keep the new collapsed column
-  select(AQI)
-
-# Add collapsed column to original dataset
-CA_overall2 <- CA_overall2 |>
-  cbind(CA_indices2)
-
-# Now, calculate the actual AQI for each county and each year by taking the AQI index
-# with the highest value in the grouped dataset
-CA_overall3 <- CA_overall2 |>
-  group_by(year, state, county, county_code, state_code) |>
-  summarise(AQI = max(AQI))
-
-# Since some counties have more than 1 air pollutant monitoring station, take
-# the mean of each pollutant in each ocunty for each year
-CA_overall4 <- CA_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
-  summarise(arithmetic_mean = mean(arithmetic_mean))
-
-# Join the dataset with AQI values and the dataset with mean arithmetic means
-# Use full_join since the AQI values dataset is shorter, since it takes the max over
-# each pollutant for each county and year
-CA_overall5 <- full_join(CA_overall3, CA_overall4, 
-                         by = c("year", "state", "county", "county_code", 
-                                "state_code"))
-
-# Make CSV file of final dataset
-write_csv(CA_overall5, "CA_overall5.csv")
 ```
 
