@@ -33,7 +33,18 @@ counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
 states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # empty map of california
-CA.SF <- counties_sf %>% filter(state_name=="California")
+CA.SF <- counties_sf %>% filter(state_name=="California"|
+                                state_name=="Arizona"|
+                                state_name=="Idaho"|
+                                state_name=="Colorado"|
+                                state_name=="Montana"|
+                                state_name=="Nevada"|
+                                state_name=="New Mexico"|
+                                state_name=="Oregona"|
+                                state_name=="Utah"|
+                                state_name=="Washington"|
+                                state_name=="Wyoming")
+
 ggplot(data = CA.SF) +
   geom_sf() 
 
