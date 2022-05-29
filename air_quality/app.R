@@ -3,24 +3,40 @@ library(tidyverse)
 library(shinythemes)
 library(thematic)
 library(urbnmapr)
-library()
-
 
 # Load data --------------------------------------------------------------------
-air_quality <- read_csv("data/CA1_avg.csv", show_col_types = FALSE)
-air_overall <- read_csv("data/CA_ovberall2.csv", show_col_types = FALSE)
+air_quality <- read_csv("data/CA_overall2.csv", show_col_types = FALSE) %>%
+  select(year, state, state_code, county, county_code, latitude, longitude, pollutant, 
+         arithmetic_mean, units_of_measure) %>%
+  mutate(fips = paste0(state_code, county_code)) %>% # add fips code
+  arrange(year, state, county, pollutant) %>%
+  distinct()
 
+pollutant_choices <- air_quality$pollutant %>% unique()
 
-pollutant_choices <- c("PM2.5", "Acceptable PM2.5 AQI & Speciation Mass", "PM10", 
-                       "CO", "Ozone", "NO2", "SO2")
+# summarize air quality
+# by county
+air_quality_summary_county <- air_quality %>%
+  group_by(year, state, county, fips, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
+  unique()
 
-# add fips code
-air_overall$fips<- with(air_overall, paste0(state_code, county_code))
-air_overall <- air_overall %>%
-  select(year, state, county, latitude, longitude, Ozone_rd, PM10_rd, PM2.5_rd, 
-         CO_rd, NO2_rd, SO2_rd, pollutant, fips)
-colnames(air_overall) <- c("year", "state", 'county', 'latitude', 'longitude',
-                           'Ozone', 'PM10', 'PM2.5', 'CO', 'NO2', 'SO2', 'pollutant', 'fips')
+#by state
+air_quality_summary_state <- air_quality %>%
+  group_by(year, state, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
+  unique()
+
+# import sf for the county-level map
+counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
+# only if plotting state-level map: 
+# states_sf <- get_urbn_map(map = "states", sf = TRUE)
+
+# merge air_quality data and sf using fips code
+counties_air <- left_join(counties_sf, air_quality_summary_county, 
+                           by = c("county_fips" = "fips")) %>%
+  unique() 
+# maybe can change this to fill counties with no values grey rather than blank
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -34,7 +50,7 @@ ui <- fluidPage(
         inputId = "pollutant",
         label = "Select a pollutant by which air quality is measured:", 
         choices = pollutant_choices,
-        selected = "PM2.5"
+        selected = "PM2.5" # placeholder pollutant
       )
     ),
     mainPanel(
@@ -51,7 +67,9 @@ ui <- fluidPage(
             label = "Select a year:",
             min = 1971,
             max = 2021,
-            value = 2010 # placeholder year
+            value = 2010, # placeholder year
+            animate = TRUE, # add animation button beside slider
+            sep = "" # remove the comma separating thousands
           ),
           textOutput(outputId = "map_text"),
           plotOutput("map")
@@ -67,6 +85,7 @@ ui <- fluidPage(
             multiple = TRUE
           ),
           textOutput(outputId = "state_text"),
+          br(),
           plotOutput("state_plot")
           ), 
         tabPanel("Data", DT::dataTableOutput(outputId = "data"))
@@ -78,55 +97,44 @@ ui <- fluidPage(
 # Define server function --------------------------------------------
 server <- function(input, output) {
 
+  # [tab 1: the map] ========================
+  
   output$map_text <- reactive({
-    paste("This map shows the air quality across the U.S. in ", input$year, 
-          "measured by ", input$pollutant)
+    paste("This map shows the air quality across the U.S. in", input$year, 
+          "measured by ", rlang::as_name(input$pollutant))
   })
   
-  output$state_text <- reactive({
-    paste("You've selected ", length(input$state), " state(s). Showing their air 
-          quality measured by ", input$pollutant, "across years...")
-  })
- 
   output$map <- renderPlot({
     
-    counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
-    states_sf <- get_urbn_map(map = "states", sf = TRUE)
-    
-    #merge using fips
-    counties_air <- inner_join(counties_sf, year_filtered, by=c("county_fips"="fips"))
-    # wrangle to get mean vlue for multiple values in a county
-    counties_air <- counties_air %>%
-      group_by(county_fips, .drop = FALSE) %>%
-      summarise(avg = mean(input$pollutant))
+    unit <- air_quality_summary_county %>%
+      filter(pollutant == input$pollutant) %>%
+      ungroup() %>%
+      select(units_of_measure) %>%
+      unique()
     
     counties_air %>%
-      ggplot() +
-      geom_sf(mapping = aes(fill = avg), color = NA) +
-      coord_sf(datum = NA) +   
-      scale_fill_gradient(name = "Pollutants", low='pink', high='navyblue', 
-                          na.value="white") +
-      theme_bw() + theme(legend.position="bottom", panel.border = element_blank())
-    
-  })
-  
-  year_filtered <- reactive({
-    
-    air_overall %>%
-      filter(year == input$year & pollutant %in% input$pollutant) %>%
-      unique()
-   
-  })
-  
-  state_filtered <- reactive({
-    
-    air_quality %>%
-      filter(state %in% input$state) %>%
-      select(year, quarter, state, year_qtr, input$pollutant) %>%
+      filter(year == input$year & pollutant == input$pollutant) %>%
       unique() %>%
-      group_by(year, state) %>%
-      summarize(air_qual_year = mean(PM2.5, na.rm = TRUE)) # need to make PM2.5 reproducible
+      ggplot() +
+      geom_sf(mapping = aes(fill = air_qual_year), color = NA) +
+      coord_sf(datum = NA) +   
+      scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"), 
+                          low = "pink", high = "navyblue", 
+                          na.value = "grey") + 
+      # grey doesn't show up for some reason
+      theme_void() + 
+      theme(plot.title = element_text(paste0("Map showing county-level 
+                                             air quality measured by ", 
+                                             rlang::as_name(input$pollutant))),
+            legend.position = "bottom")
     
+  })
+  
+  # [tab 2: the line graph]=================== 
+  
+  output$state_text <- reactive({
+    paste0("You've selected ", length(input$state), " state(s). Showing their air 
+          quality measured by ", rlang::as_name(input$pollutant), " across years...")
   })
   
   output$state_plot <- renderPlot({
@@ -139,18 +147,32 @@ server <- function(input, output) {
       )
     )
     
-    state_filtered() %>%
+    unit <- air_quality_summary_state %>%
+      filter(pollutant == input$pollutant) %>%
+      ungroup() %>%
+      select(units_of_measure) %>%
+      unique()
+    
+    air_quality_summary_state %>%
+      filter(state %in% input$state & pollutant == input$pollutant) %>%
       ggplot(aes(year, air_qual_year, color = state)) +
       geom_line() +
       theme_light() +
-      labs(title = paste("Air Quality Across Years"),
-           subtitle = paste("measured by PM2.5"),
-           x = "Year", y = "Air Quality", color = "State")
+      labs(title = paste0("Air Quality Across Years in ", paste(input$state, collapse = ",")),
+           subtitle = paste0("measured by ", rlang::as_name(input$pollutant)),
+           x = "Year", y = paste0("Polution level (", unit, ")"), 
+           color = "State")
     
   })
-    
+  
+  # [tab 3: the table]==========================
+  
   output$data <- DT::renderDataTable({
-    state_filtered()
+    air_quality_summary_county %>%
+      mutate(unit = units_of_measure,
+             `pollution level` = air_qual_year, 
+             .keep = "unused") %>%
+      arrange(year, state, fips, pollutant)
   })
   
 }
