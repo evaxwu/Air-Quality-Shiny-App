@@ -2,7 +2,7 @@ Project 2
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
-# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Saturday.
+# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Sunday.
 
 This file explains the structure of the repository. This file will
 include our write-up.
