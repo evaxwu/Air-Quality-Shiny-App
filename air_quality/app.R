@@ -16,8 +16,19 @@ pollutant_choices <- air_quality$pollutant %>% unique()
 
 # summarize air quality
 air_quality_summary <- air_quality %>%
-  group_by(year, state, pollutant, units_of_measure) %>%
-  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
+  group_by(year, state, fips, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
+  unique()
+
+# import sf for the county-level map
+counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
+# only if plotting state-level data: 
+# states_sf <- get_urbn_map(map = "states", sf = TRUE)
+
+# merge air_quality data and sf using fips code
+counties_air <- inner_join(counties_sf, air_quality_summary, 
+                           by = c("county_fips" = "fips")) %>%
+  unique()
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -80,44 +91,40 @@ server <- function(input, output) {
   
   output$map_text <- reactive({
     paste("This map shows the air quality across the U.S. in", input$year, 
-          "measured by ", input$pollutant)
-  })
-  
-  year_filtered <- reactive({
-    
-    air_quality %>%
-      filter(year == input$year & pollutant == input$pollutant) %>%
-      unique()
-    
+          "measured by ", rlang::as_name(input$pollutant))
   })
   
   output$map <- renderPlot({
     
-    counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
-    states_sf <- get_urbn_map(map = "states", sf = TRUE)
-    
-    # merge using fips
-    counties_air <- inner_join(counties_sf, year_filtered(), 
-                               by=c("county_fips"="fips"), copy = TRUE) %>%
-      # wrangle to get mean value for multiple values in a county
-      group_by(county_fips, .drop = FALSE) %>%
-      summarise(avg = mean(input$pollutant))
+    unit <- air_quality_summary %>%
+      filter(pollutant == input$pollutant) %>%
+      ungroup() %>%
+      select(units_of_measure) %>%
+      unique()
     
     counties_air %>%
+      filter(year == input$year & pollutant == input$pollutant) %>%
+      unique() %>%
       ggplot() +
-      geom_sf(mapping = aes(fill = avg), color = NA) +
+      geom_sf(mapping = aes(fill = air_qual_year), color = NA) +
       coord_sf(datum = NA) +   
-      scale_fill_gradient(name = "Pollutants", low='pink', high='navyblue', 
-                          na.value="white") +
-      theme_bw() + theme(legend.position="bottom", panel.border = element_blank())
+      scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"), 
+                          low = "pink", high = "navyblue", 
+                          na.value = "grey") + 
+      # grey doesn't show up for some reason
+      theme_void() + 
+      theme(plot.title = element_text(paste0("Map showing county-level 
+                                             air quality measured by ", 
+                                             rlang::as_name(input$pollutant))),
+            legend.position = "bottom")
     
   })
   
   # [tab 2: the line graph]=================== 
   
   output$state_text <- reactive({
-    paste("You've selected ", length(input$state), " state(s). Showing their air 
-          quality measured by ", input$pollutant, "across years...")
+    paste0("You've selected ", length(input$state), " state(s). Showing their air 
+          quality measured by ", rlang::as_name(input$pollutant), " across years...")
   })
   
   output$state_plot <- renderPlot({
@@ -130,14 +137,20 @@ server <- function(input, output) {
       )
     )
     
+    unit <- air_quality_summary %>%
+      filter(pollutant == input$pollutant) %>%
+      ungroup() %>%
+      select(units_of_measure) %>%
+      unique()
+    
     air_quality_summary %>%
       filter(state %in% input$state & pollutant == input$pollutant) %>%
       ggplot(aes(year, air_qual_year, color = state)) +
       geom_line() +
       theme_light() +
-      labs(title = paste("Air Quality Across Years in ", paste(input$state, collapse = ",")),
-           subtitle = paste("measured by ", rlang::as_name(input$pollutant)),
-           x = "Year", y = paste("Air Quality ()"), 
+      labs(title = paste0("Air Quality Across Years in ", paste(input$state, collapse = ",")),
+           subtitle = paste0("measured by ", rlang::as_name(input$pollutant)),
+           x = "Year", y = paste0("Polution level (", unit, ")"), 
            color = "State")
     
   })
@@ -145,7 +158,7 @@ server <- function(input, output) {
   # [tab 3: the table]==========================
   
   output$data <- DT::renderDataTable({
-    air_quality
+    air_quality_summary
   })
   
 }
