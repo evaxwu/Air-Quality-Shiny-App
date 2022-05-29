@@ -15,21 +15,28 @@ air_quality <- read_csv("data/CA_overall2.csv", show_col_types = FALSE) %>%
 pollutant_choices <- air_quality$pollutant %>% unique()
 
 # summarize air quality
-air_quality_summary <- air_quality %>%
-  group_by(year, state, fips, pollutant, units_of_measure) %>%
+# by county
+air_quality_summary_county <- air_quality %>%
+  group_by(year, state, county, fips, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
+  unique()
+
+#by state
+air_quality_summary_state <- air_quality %>%
+  group_by(year, state, pollutant, units_of_measure) %>%
   summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
   unique()
 
 # import sf for the county-level map
 counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
-# only if plotting state-level data: 
+# only if plotting state-level map: 
 # states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # merge air_quality data and sf using fips code
-counties_air <- left_join(counties_sf, air_quality_summary, 
+counties_air <- left_join(counties_sf, air_quality_summary_county, 
                            by = c("county_fips" = "fips")) %>%
   unique() 
-# maybe can change this to color counties with no values grey rather than blank
+# maybe can change this to fill counties with no values grey rather than blank
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -43,7 +50,7 @@ ui <- fluidPage(
         inputId = "pollutant",
         label = "Select a pollutant by which air quality is measured:", 
         choices = pollutant_choices,
-        selected = "PM2.5"
+        selected = "PM2.5" # placeholder pollutant
       )
     ),
     mainPanel(
@@ -60,7 +67,9 @@ ui <- fluidPage(
             label = "Select a year:",
             min = 1971,
             max = 2021,
-            value = 2010 # placeholder year
+            value = 2010, # placeholder year
+            animate = TRUE, # add animation button beside slider
+            sep = "" # remove the comma separating thousands
           ),
           textOutput(outputId = "map_text"),
           plotOutput("map")
@@ -97,7 +106,7 @@ server <- function(input, output) {
   
   output$map <- renderPlot({
     
-    unit <- air_quality_summary %>%
+    unit <- air_quality_summary_county %>%
       filter(pollutant == input$pollutant) %>%
       ungroup() %>%
       select(units_of_measure) %>%
@@ -138,13 +147,13 @@ server <- function(input, output) {
       )
     )
     
-    unit <- air_quality_summary %>%
+    unit <- air_quality_summary_state %>%
       filter(pollutant == input$pollutant) %>%
       ungroup() %>%
       select(units_of_measure) %>%
       unique()
     
-    air_quality_summary %>%
+    air_quality_summary_state %>%
       filter(state %in% input$state & pollutant == input$pollutant) %>%
       ggplot(aes(year, air_qual_year, color = state)) +
       geom_line() +
@@ -159,7 +168,11 @@ server <- function(input, output) {
   # [tab 3: the table]==========================
   
   output$data <- DT::renderDataTable({
-    air_quality_summary
+    air_quality_summary_county %>%
+      mutate(unit = units_of_measure,
+             `pollution level` = air_qual_year, 
+             .keep = "unused") %>%
+      arrange(year, state, fips, pollutant)
   })
   
 }
