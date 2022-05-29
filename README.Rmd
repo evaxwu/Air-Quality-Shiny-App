@@ -4,6 +4,8 @@ author: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 output: github_document
 ---
 
+# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Saturday.
+
 ```{r setup, include=FALSE}
 library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
@@ -20,29 +22,3 @@ This file explains the structure of the repository. This file will include our w
 * [air_quality](air_quality) folder. This folder contains an [app.R](air_quality/app.R) document consisting of the code used to build the app and a [data](air_quality/data) folder consisting of the data we used to make visualizations in the app. 
 
 * We have a README.Rmd and README.md file for each folder. These files explain the structure of the repository. The README files in the main directory will include our write-up.
-
-```{r graph}
-# experimenting w/ Cali data
-ex <- read_csv("air_quality/data/CA1_avg.csv") %>%
-  select(-row) %>%
-  unique()
-
-input <- c()
-input$state <- c("California")
-input$pollutant <- "PM2.5"
-
-state_filtered <- ex %>%
-  filter(state %in% input$state) %>%
-  select(year, quarter, state, year_qtr, input$pollutant) %>%
-  unique() %>%
-  group_by(year, state) %>%
-  summarize(air_qual_year = mean(PM2.5, na.rm = TRUE))
-
-state_filtered %>%
-  ggplot(aes(year, air_qual_year, color = state)) +
-  geom_line() +
-  theme_light() +
-  labs(title = paste("Air Quality Across Years in", input$state),
-       subtitle = paste("measured by", input$pollutant),
-       x = "Year", y = "Air Quality", color = "State")
-```
