@@ -30,7 +30,17 @@ air_quality_summary_state <- air_quality %>%
 # import sf for the county-level map
 counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
 # only if plotting state-level map: 
-# states_sf <- get_urbn_map(map = "states", sf = TRUE)
+states_sf <- get_urbn_map(map = "states", sf = TRUE)
+
+# empty map of california
+CA.SF <- counties_sf %>% filter(state_name=="California")
+ggplot(data = CA.SF) +
+  geom_sf() 
+
+counties_air <- left_join(counties_sf, air_quality_summary_county, 
+                          by = c("county_fips" = "fips")) %>% unique() 
+
+
 
 # merge air_quality data and sf using fips code
 counties_air <- left_join(counties_sf, air_quality_summary_county, 
@@ -116,6 +126,7 @@ server <- function(input, output) {
       filter(year == input$year & pollutant == input$pollutant) %>%
       unique() %>%
       ggplot() +
+      geom_sf(data = CA.SF) +
       geom_sf(mapping = aes(fill = air_qual_year), color = NA) +
       coord_sf(datum = NA) +   
       scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"), 
