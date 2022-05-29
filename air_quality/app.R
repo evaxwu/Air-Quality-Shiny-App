@@ -26,9 +26,10 @@ counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
 # states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # merge air_quality data and sf using fips code
-counties_air <- inner_join(counties_sf, air_quality_summary, 
+counties_air <- left_join(counties_sf, air_quality_summary, 
                            by = c("county_fips" = "fips")) %>%
-  unique()
+  unique() 
+# maybe can change this to color counties with no values grey rather than blank
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
