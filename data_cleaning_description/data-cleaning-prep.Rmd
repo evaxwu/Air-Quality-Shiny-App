@@ -293,14 +293,15 @@ CA5_avg2 <- merge(CA5_avg,c(Ozone_index,CO_index,NO2_index,SO2_index), by = "row
 
 # Rbind all years
 
-CA_overall <- rbind(CA1_avg2,CA2_avg2,CA3_avg2,CA4_avg2,CA5_avg2)
-
-CA_overall2 <- CA_overall |>
+CA_overall <- rbind(CA1_avg2,CA2_avg2,CA3_avg2,CA4_avg2,CA5_avg2) |>
   pivot_longer(c(Ozone,NO2,PM2.5,PM10,CO,SO2), names_to = "pollutant", values_to = "arithmetic_mean") |>
-  filter(arithmetic_mean > 0)
+  filter(arithmetic_mean > 0) |>
+  unique() |>
+  group_by(year, state, state_code, county, county_code, latitude, longitude, pollutant, units_of_measure) %>%
+  summarize(arithmetic_mean = mean(arithmetic_mean)) 
+# since there are multiple stations measuring air quality, we take the mean of all so that each county has 
+# one row for each pollutant in each year
 
 write_csv(CA_overall, "CA_ovberall.csv")
-
-write_csv(CA_overall2, "CA_ovberall2.csv")
 
 ```
