@@ -1,0 +1,22 @@
+---
+title: "Writeup"
+author: "Furred Flies - Jimin Han, Eva Wu, Caleb Weis"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+# Data 
+
+# Approach
+
+# Analysis
+
+# Conclusion
+
+
