@@ -20,8 +20,7 @@ state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana",
 # summarize air quality by state
 air_quality_state <- air_quality %>%
   group_by(year, state, pollutant, units_of_measure) %>%
-  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE)) %>%
-  unique()
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
 
 # summarize aqi by state
 aqi_state <- air_quality %>%
@@ -31,7 +30,8 @@ aqi_state <- air_quality %>%
 # summarize aqi by county
 aqi_county <- air_quality %>%
   group_by(year, state, county, fips) %>%
-  summarize(mean_aqi = mean(AQI, na.rm = TRUE))
+  summarize(mean_aqi = mean(AQI, na.rm = TRUE)) %>%
+  unique()
 
 # import sf for the county-level map
 counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
@@ -45,22 +45,13 @@ counties_air <- left_join(counties_sf, air_quality,
 counties_aqi <- left_join(counties_sf, aqi_county,
                           by = c("county_fips" = "fips")) 
 
-WEST.SF <- counties_sf %>% filter(state_name=="California"|
-                                  state_name=="Arizona"|
-                                  state_name=="Idaho"|
-                                  state_name=="Colorado"|
-                                  state_name=="Montana"|
-                                  state_name=="Nevada"|
-                                  state_name=="New Mexico"|
-                                  state_name=="Oregon"|
-                                  state_name=="Utah"|
-                                  state_name=="Washington"|
-                                  state_name=="Wyoming")
+# extract sf info for Western US states only
+WEST.SF <- counties_sf %>% filter(state_name %in% state_choices)
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
   theme = shinytheme("united"),
-  titlePanel("Air Quality of U.S. Counties in 1971-2021"),
+  titlePanel("Air Quality of Western U.S. Counties in 1971-2021"),
   "A Shiny app built by Caleb Weis, Eva Wu, and Jimin Han",
   br(), br(),
   sidebarLayout(
@@ -74,11 +65,12 @@ ui <- fluidPage(
     ),
     mainPanel(
       hr(),
-      "Hi hi! Interested in checking out air quality trends in the US?
+      "Hi hi! Interested in checking out air quality trends in Western US?
       Hope the following graphs help!",
       br(), br(),
       tabsetPanel(
-        tabPanel( # tab 1
+        # tab 1======
+        tabPanel(
           "Map",
           br(),
           sliderInput(
@@ -93,7 +85,24 @@ ui <- fluidPage(
           textOutput(outputId = "map_text"),
           plotOutput("map")
         ),
-        tabPanel( # tab 3
+        # tab 2======
+        tabPanel(
+          "AQI Map",
+          br(),
+          sliderInput(
+            inputId = "year_aqi",
+            label = "Select a year:",
+            min = 1971,
+            max = 2021,
+            value = 1971, # placeholder year
+            animate = TRUE, # add animation button beside slider
+            sep = "" # remove the comma separating thousands
+          ),
+          textOutput(outputId = "map_text_aqi"),
+          plotOutput("map_aqi")
+        ),
+        # tab 3======
+        tabPanel(
           "Line Plot",
           br(),
           selectInput(
@@ -107,7 +116,8 @@ ui <- fluidPage(
           br(),
           plotOutput("state_plot")
           ),
-        tabPanel( # tab 4
+        # tab 4======
+        tabPanel(
           "AQI Line Plot",
           br(),
           selectInput(
@@ -121,7 +131,8 @@ ui <- fluidPage(
           br(),
           plotOutput("aqi_line_plot")
         ),
-        tabPanel("Data", DT::dataTableOutput(outputId = "data")) # tab 5
+        # tab 5======
+        tabPanel("Data", DT::dataTableOutput(outputId = "data"))
       )
     )
   )
@@ -160,6 +171,17 @@ server <- function(input, output) {
                                              rlang::as_name(input$pollutant))),
             legend.position = "left")
 
+  })
+  
+  # [tab 2: the AQI map] ========================
+  
+  output$map_text_aqi <- reactive({
+    paste("This map shows the air quality across the U.S. in", input$year,
+          "measured by AQI (Air Quality Index)")
+  })
+  
+  output$map_aqi <- renderPlot({
+    
   })
 
   # [tab 3: the line graph]===================
@@ -231,7 +253,7 @@ server <- function(input, output) {
 
   output$data <- DT::renderDataTable({
     air_quality %>%
-      select(year, state, county, fips, AQI, AQI_category, pollutant, 
+      select(year, state, county, fips, AQI, `Air Quality Index`, pollutant, 
              arithmetic_mean, units_of_measure) %>%
       rename(unit = units_of_measure,
              `pollution level` = arithmetic_mean,
