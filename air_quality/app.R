@@ -33,7 +33,6 @@ counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
 states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # empty map of california
-CA.SF <- counties_sf %>% filter(state_name=="California")
 ggplot(data = CA.SF) +
   geom_sf() 
 
