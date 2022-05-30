@@ -1,0 +1,11 @@
+---
+title: "README"
+output: html_document
+date: '2022-05-30'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is the folder which contains our presentation.
