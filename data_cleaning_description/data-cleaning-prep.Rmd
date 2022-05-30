@@ -321,7 +321,7 @@ CA_overall3 <- CA_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each ocunty for each year
 CA_overall4 <- CA_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -342,12 +342,6 @@ CA_overall5 <- CA_overall5 |>
 
 
 ```{r}
-states <- aqs_states()
-
-states <- states |>
-  filter(state %in% c("California", "Oregon", "Washington", "Idaho", "Utah", "Wyoming", "Colorado",
-                      "Arizona", "Nevada", "New Mexico", "Montana"))
-
 # Same as above, but for Arizona
 # Data for Arizona from 2011 to 2021 - only year matters in bdate/edate variables
 AZ1 <- aqs_annualsummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "04")
@@ -636,7 +630,7 @@ AZ_overall3 <- AZ_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 AZ_overall4 <- AZ_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -941,7 +935,7 @@ CO_overall3 <- CO_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each ocunty for each year
 CO_overall4 <- CO_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -952,7 +946,7 @@ CO_overall5 <- full_join(CO_overall3, CO_overall4,
                                 "state_code"))
 
 # Make CSV file of final dataset
-write_csv(CO_overall5, "CO_overall5.csv")
+# write_csv(CO_overall5, "CO_overall5.csv")
 ```
 
 
@@ -1234,7 +1228,7 @@ ID_overall3 <- ID_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 ID_overall4 <- ID_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -1538,7 +1532,7 @@ MT_overall3 <- MT_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 MT_overall4 <- MT_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -1841,7 +1835,7 @@ NV_overall3 <- NV_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 NV_overall4 <- NV_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -2144,7 +2138,7 @@ NM_overall3 <- NM_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 NM_overall4 <- NM_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -2447,7 +2441,7 @@ OR_overall3 <- OR_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 OR_overall4 <- OR_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -2750,7 +2744,7 @@ UT_overall3 <- UT_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 UT_overall4 <- UT_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -3054,7 +3048,7 @@ WA_overall3 <- WA_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 WA_overall4 <- WA_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
@@ -3357,7 +3351,7 @@ WY_overall3 <- WY_overall2 |>
 # Since some counties have more than 1 air pollutant monitoring station, take
 # the mean of each pollutant in each county for each year
 WY_overall4 <- WY_overall2 |>
-  group_by(year, state, county, county_code, state_code, pollutant) |>
+  group_by(year, state, county, county_code, state_code, pollutant, units_of_measure) |>
   summarise(arithmetic_mean = mean(arithmetic_mean))
 
 # Join the dataset with AQI values and the dataset with mean arithmetic means
