@@ -40,10 +40,22 @@ states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # merge air quality data and sf using fips code
 counties_air <- left_join(counties_sf, air_quality,
-                           by = c("county_fips" = "fips")) %>% unique()
+                           by = c("county_fips" = "fips")) 
 
 counties_aqi <- left_join(counties_sf, aqi_county,
-                          by = c("county_fips" = "fips")) %>% unique()
+                          by = c("county_fips" = "fips")) 
+
+WEST.SF <- counties_sf %>% filter(state_name=="California"|
+                                  state_name=="Arizona"|
+                                  state_name=="Idaho"|
+                                  state_name=="Colorado"|
+                                  state_name=="Montana"|
+                                  state_name=="Nevada"|
+                                  state_name=="New Mexico"|
+                                  state_name=="Oregon"|
+                                  state_name=="Utah"|
+                                  state_name=="Washington"|
+                                  state_name=="Wyoming")
 
 # Define UI --------------------------------------------------------------------
 ui <- fluidPage(
@@ -96,7 +108,7 @@ ui <- fluidPage(
           plotOutput("state_plot")
           ),
         tabPanel( # tab 4
-          "API Line Plot",
+          "AQI Line Plot",
           br(),
           selectInput(
             inputId = "state_aqi",
@@ -135,7 +147,6 @@ server <- function(input, output) {
 
     counties_air %>%
       filter(year == input$year & pollutant == input$pollutant) %>%
-      unique() %>%
       ggplot() +
       geom_sf(data = WEST.SF) +
       geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
