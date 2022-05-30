@@ -3375,22 +3375,22 @@ AllStates_overall <- rbind(CA_overall5,AZ_overall5,CO_overall5,ID_overall5,
 
 AQI_rank_fn <- function(x) {
   if (x <= 50){
-    return(1)
+    return("Good")
   } else if (x <= 100){
-    return(2)
+    return("Moderate")
   } else if (x <= 150){
-    return(3)
+    return("Unhealthy for Sensitive Groups")
   } else if (x <= 200){
-    return(4)
+    return("Unhealthy")
   } else if (x <= 300){
-    return(5)
+    return("Very Unhealthy")
   } else {
-    return(6)
+    return("Hazardous")
   }
 }
 
 AllStates_overall <- AllStates_overall |>
-  mutate(AQI_rank = sapply(AQI, AQI_rank_fn))
+  mutate("Air Quality Index" = sapply(AQI, AQI_rank_fn))
 
 write_csv(AllStates_overall, "AllStates_overall.csv")
 ```
