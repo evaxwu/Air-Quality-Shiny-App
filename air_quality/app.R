@@ -40,7 +40,7 @@ CA.SF <- counties_sf %>% filter(state_name=="California"|
                                   state_name=="Montana"|
                                   state_name=="Nevada"|
                                   state_name=="New Mexico"|
-                                  state_name=="Oregona"|
+                                  state_name=="Oregon"|
                                   state_name=="Utah"|
                                   state_name=="Washington"|
                                   state_name=="Wyoming")
@@ -141,9 +141,8 @@ server <- function(input, output) {
       geom_sf(mapping = aes(fill = air_qual_year), color = NA) +
       coord_sf(datum = NA) +
       scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"),
-                          low = "pink", high = "navyblue",
-                          na.value = "grey") +
-      # grey doesn't show up for some reason
+                          low = "green", high = "maroon",
+                          na.value = "white") +
       theme_void() +
       theme(plot.title = element_text(paste0("Map showing county-level
                                              air quality measured by ",
