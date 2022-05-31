@@ -2,8 +2,6 @@ Project 2
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
-# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Saturday.
-
 This file explains the structure of the repository. This file will
 include our write-up.
 
@@ -19,7 +17,7 @@ include our write-up.
     the csv files of data loaded from other sources, as well as the
     README file consisting of the codebook.
 
--   [air_quality](air_quality) folder. This folder contains an
+-   [shiny](shiny) folder. This folder contains an
     [app.R](air_quality/app.R) document consisting of the code used to
     build the app and a [data](air_quality/data) folder consisting of
     the data we used to make visualizations in the app.
