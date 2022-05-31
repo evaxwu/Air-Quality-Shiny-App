@@ -13,9 +13,14 @@ air_quality <- read_csv("data/AllStates_overall.csv", show_col_types = FALSE) %>
   arrange(year, state, county, pollutant) %>%
   distinct()
 
+colnames(air_quality)[colnames(air_quality) == 'Air Quality Index'] <- 'air_quality_index'
+
 pollutant_choices <- air_quality$pollutant %>% unique()
 state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana", 
                    "Nevada", "New Mexico", "Oregon", "Utah", "Washington", "Wyoming")
+
+aqi_grade <- c('Good', 'Moderate', 'Unhealthy for Sensitive Groups',
+               'Unhealthy', 'Very Unhealthy', 'Hazardous')
 
 # summarize air quality by state
 air_quality_state <- air_quality %>%
@@ -121,7 +126,23 @@ ui <- fluidPage(
           br(),
           plotOutput("aqi_line_plot")
         ),
-        tabPanel("Data", DT::dataTableOutput(outputId = "data")) # tab 5
+        tabPanel( # tab 5
+          "AQI Map",
+          br(),
+          sliderInput(
+            inputId = "year",
+            label = "Select a year:",
+            min = 1971,
+            max = 2021,
+            value = 1971, # placeholder year
+            animate = TRUE, # add animation button beside slider
+            sep = "" # remove the comma separating thousands
+          ),
+          textOutput(outputId = "aqi_map_text"),
+          br(),
+          plotOutput("aqi_map_plot")
+        ),
+        tabPanel("Data", DT::dataTableOutput(outputId = "data")) # tab 6
       )
     )
   )
@@ -227,7 +248,36 @@ server <- function(input, output) {
     
   })
   
-  # [tab 5: the table]==========================
+  # [tab 5: the aqi map]===================
+  
+  output$aqi_map_text <- reactive({
+    paste("This map shows the aqi index by grade across the U.S. in", input$year)
+  })
+  
+  output$aqi_map_plot <- renderPlot({
+    
+    unit <- air_quality %>%
+      filter(year == input$year) %>%
+      ungroup() %>%
+      select(units_of_measure) %>%
+      unique()
+    
+    counties_air %>%
+      filter(year == input$year) %>%
+      ggplot() +
+      geom_sf(data = WEST.SF) +
+      geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+      coord_sf(datum = NA) +
+      scale_fill_brewer() +
+      theme_void() +
+      theme(plot.title = element_text(paste0("Map showing county-level
+                                             air quality measured by ",
+                                             rlang::as_name(input$pollutant))),
+            legend.position = "left")
+    
+  })
+  
+  # [tab 6: the table]==========================
 
   output$data <- DT::renderDataTable({
     air_quality %>%
