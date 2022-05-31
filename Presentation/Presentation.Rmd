@@ -9,49 +9,68 @@ runtime: shiny
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(error = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+# knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(comment = FALSE))
 library(shiny)
+library(tidyverse)
+library(knitr)
 ```
 
 # Background
 
 ---
 
-The Clean Air Act of 1970 was the first to establish National Ambient Air Quality Standards, which have remained essentially unchanged since then.
+- The Clean Air Act of 1970 was the first to establish National Ambient Air Quality Standards, which have remained essentially unchanged since then.
 
-Despite these standards, and the US' resulting pollution reduction, the exacerbation of climate change and relentless use of fossil fuels in industry and commerce has continued to negatively impact the levels of certain pollutants in the US.
+- Despite these standards, and the US' resulting pollution reduction, the exacerbation of climate change and relentless use of fossil fuels in industry and commerce has continued to negatively impact the levels of certain pollutants in the US.
 
-In order to visualize the trend in pollutant levels and overall air quality in the US, we decided to 
+- In order to visualize the trend in pollutant levels and overall air quality in the US, we decided to
 make a shiny app with a chloropleth map of the western US over time, colored by pollutant/AQI levels, and some line plots of pollution/AQI levels over time.
-
----
 
 # Process
 
 ---
 
-We first 
+- We first obtained data from the US EPA Air Quality System API, called RAQSAPI and developed by Clinton Mccrowey, a Physical Scientist with the US EPA. After a lot of data wrangling, we were able to create the following dataset:
 
-## Interactive Plot
+```{r load-data}
+a <- read_csv("~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/data/AllStates_overall.csv")
 
-```{r load-shiny, echo = FALSE}
+head(a)
+```
 
-# shinyAppFile(
-#   appFile = "shiny/app.R",
-#   options = list(width = "100%", height = 700)
-# )
+# Creating the website
+
+---
+
+- We used the urbnmapr package in order to create maps with US state and county outlines, and added layers so that only the Western US, our focus for this project, would be shown.
+
+- We then filled by `arithmetic_mean`, the variable encoding average yearly pollution levels by county, using a continuous, self-created scale, or by Air Quality Category, a discrete variable that we created by taking direct inspiration from the globally standardized Air Quality Index categories, and using the once again globally standardized discrete color scale for the Air Quality Category chloropleth map.
+
+- We used the tabPanel method to create multiple tabs in our app, also including tabs for line plots of pollutants and of Air Quality Index (the value which informs the Air Quality Categorization) over time, and a tab for the dataset itself, in a readable format.
+
+# The website
+
+---
+
+```{r load-shiny}
+
+shinyAppFile(
+  appFile = "~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/shiny/app.R",
+  options = list(width = "100%", height = 700)
+)
 
 ```
 
-## Bullets
+# Findings
 
-- Bullet 1
-- Bullet 2
-- Bullet 3
+---
 
-## R Output
+- We saw that overall, pollutant levels were quite high in the early 1970s, before falling rapidly, reaching a minimum in the 1980s, and then rising dramatically once again in the early 1990s and remaining constant after that.
 
-```{r cars}
-summary(cars)
-```
+- Reflecting this, Air Quality Categories were somewhat varied in the 1970s, before becoming very consistently moderate throughout the 1980s, 1990s, 2000s, and 2010s—this consistency is partially due to the large size of the Category increments, and the fact that we were looking at average pollution levels across entire years.
 
-
+- Our analysis was slightly hindered by a lack of consistent data, especially in some of the more rural states such as Wyoming and Montana, but we were still able to get consistent enough findings that we believe the trends that we observed to be accurate.
