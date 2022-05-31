@@ -3366,13 +3366,14 @@ WY_overall5 <- full_join(WY_overall3, WY_overall4,
 ```
 
 ```{r}
+# This is the code to make a final csv file with all of the states
 # Combine all of the above files into one with all states
-
 AllStates_overall <- rbind(CA_overall5,AZ_overall5,CO_overall5,ID_overall5,
                            MT_overall5,NV_overall5,NM_overall5,OR_overall5,
                            UT_overall5,WA_overall5,WY_overall5) |>
   mutate_all(~replace(., is.na(.), 0))
 
+# Create fn. to calculate AQI category
 AQI_rank_fn <- function(x) {
   if (x <= 50){
     return("Good")
@@ -3389,22 +3390,29 @@ AQI_rank_fn <- function(x) {
   }
 }
 
+# Run function to create AQI category column
 AllStates_overall <- AllStates_overall |>
   mutate("Air Quality Index" = sapply(AQI, AQI_rank_fn))
 
+# The below code is to fix the issue in which the AQI values for the 1980s were all 0
+# Create dataset of only 1980s data (with a buffer on either side)
 AllStates_overall2 <- AllStates_overall |>
   filter(year >= 1979) |>
   filter(year <= 1991) |>
   mutate(row = row_number()) |>
+  # Pivot wider to redo the AQI calculations from above
   pivot_wider(names_from = pollutant, values_from = arithmetic_mean)
 
+# Round values
 AllStates_overall3 <- AllStates_overall2 |>
   mutate(Ozone_rd = round(AllStates_overall2$Ozone, 3),
          CO_rd = round(AllStates_overall2$CO, 1), NO2_rd = round(AllStates_overall2$NO2, 0),
          SO2_rd = round(AllStates_overall2$SO2, 0),
          PM10_rd = round(AllStates_overall2$PM10, 0)) |>
+  # Replace NAs with 0s so below functions will work
   mutate_all(~replace(., is.na(.), 0))
 
+# Calculate AQI indices using con2aqi function
 Ozone_index <- tibble(con2aqi("o3", con = AllStates_overall3$Ozone_rd, type = "1h")) |>
   mutate(row = row_number()) |>
   rename(Ozone_index = `con2aqi("o3", con = AllStates_overall3$Ozone_rd, type = "1h")`) |>
@@ -3426,38 +3434,54 @@ PM10_index <- tibble(con2aqi("pm10", con = AllStates_overall3$PM10_rd, type = NU
   rename(PM10_index = `con2aqi("pm10", con = AllStates_overall3$PM10_rd, type = NULL)`) |>
   select(!row)
 
+# Create dataframe with indices
 indices <- cbind(Ozone_index, CO_index, NO2_index, SO2_index,PM10_index)
 
+# Collapse above dataframe by taking rowwise maximums and then only keeping the column with maximums
 indices2 <- indices |>
   mutate(AQI = rowMaxs(as.matrix(indices))) |>
   # Only keep the new collapsed column
   select(AQI)
 
+# Add new AQI column back to filtered dataset after deleting the original AQI column
 AllStates_overall5 <- AllStates_overall2 |>
   select(!AQI) |>
   cbind(indices2) |>
+  # Pivot longer as above
   pivot_longer(c(CO,NO2,Ozone,SO2,PM10), names_to = "pollutant",
                values_to = "arithmetic_mean") |>
+  # Drop NAs to shorten dataframe
   drop_na() |>
+  # Omit row column for below concatenation of dataframes
   select(!row)
 
+# Get dataframe w/ before 1979 data
 AllStates_overall6 <- AllStates_overall |>
   filter(year < 1979)
 
+# Get dataframe w/ after 1991 data
 AllStates_overall7 <- AllStates_overall |>
   filter(year > 1991)
 
+# Create new dataframe of the 3 time intervals conctaenated toogether
 AllStates_overall8 <- rbind(AllStates_overall6, AllStates_overall5,
                             AllStates_overall7)
 
+# Apply AQI_rank_fn from above to AQI value once again to successfully correct the error
+# of the 1980s having the improper AQI categories, which arose from them having 
+# incorrect AQI values
 AllStates_overall9 <- AllStates_overall8 |>
   mutate("Air Quality Index" = sapply(AQI, AQI_rank_fn)) |>
   select(!Air.Quality.Index)
 
+# Format staet_code and county_code columns to pad them with zeroes and convert them to
+# character columns so that the correct fips code can be garnered in app.R code,
+# which is vital to creating a correct map
 AllStates_overall10 <- AllStates_overall9 |>
   mutate(county_code = formatC(county_code, width = 3, format = "d", flag = "0"),
          state_code = formatC(state_code, width = 2, format = "d", flag = "0"))
 
+# Write csv file of updated dataset
 write_csv(AllStates_overall10, "AllStates_overall.csv")
 ```
 

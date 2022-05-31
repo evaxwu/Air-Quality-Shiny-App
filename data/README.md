@@ -40,15 +40,6 @@ variables.
 
 The following is a snippet of the data:
 
-    ## Rows: 23336 Columns: 10
-    ## ── Column specification ────────────────────────────────────────────────────────
-    ## Delimiter: ","
-    ## chr (7): state, county, county_code, state_code, pollutant, units_of_measure...
-    ## dbl (3): year, AQI, arithmetic_mean
-    ## 
-    ## ℹ Use `spec()` to retrieve the full column specification for this data.
-    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-
 | year | state      | state_code | county  | county_code | AQI | Air Quality Index | pollutant | arithmetic_mean | units_of_measure  |
 |-----:|:-----------|:-----------|:--------|:------------|----:|:------------------|:----------|----------------:|:------------------|
 | 1971 | California | 06         | Alameda | 001         |  67 | Moderate          | CO        |        2.719067 | Parts per million |

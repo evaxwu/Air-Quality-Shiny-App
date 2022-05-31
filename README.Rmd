@@ -4,8 +4,6 @@ author: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 output: github_document
 ---
 
-# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Saturday.
-
 ```{r setup, include=FALSE}
 library(tidyverse)
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,7 +17,7 @@ This file explains the structure of the repository. This file will include our w
 
 * [data_cleaning_description](data_cleaning_description) folder. This folder contains RMarkDown documents used to load, examine, and wrangle data from the RAQSAPI and to load data from other sources, the csv files of data loaded from other sources, as well as the README file consisting of the codebook.
 
-* [air_quality](air_quality) folder. This folder contains an [app.R](air_quality/app.R) document consisting of the code used to build the app and a [data](air_quality/data) folder consisting of the data we used to make visualizations in the app. 
+* [shiny](shiny) folder. This folder contains an [app.R](air_quality/app.R) document consisting of the code used to build the app and a [data](air_quality/data) folder consisting of the data we used to make visualizations in the app. 
 
 * [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the link to our shiny app website
 

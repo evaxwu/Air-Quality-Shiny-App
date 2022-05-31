@@ -147,7 +147,7 @@ server <- function(input, output) {
 
   output$map_text <- reactive({
     paste("This map shows the air quality across Western U.S. in", input$year,
-          "measured by ", rlang::as_name(input$pollutant))
+          "measured by ", rlang::as_name(input$pollutant)) # this helps recognize input as a string
   })
 
   output$map <- renderPlot({
@@ -186,7 +186,7 @@ server <- function(input, output) {
 
     # create a color scale
     cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
-              "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
+              "Unhealthy" = "red", "Very Unhealthy" = "maroon", "Hazardous" = "purple")
 
     counties_air %>%
       filter(year == input$year_aqi) %>%
@@ -199,7 +199,7 @@ server <- function(input, output) {
            fill = "AQI Levels") +
       theme_void() +
       theme(legend.position = "left")
-
+    
   })
 
   # [tab 3: the line graph]===================
@@ -271,13 +271,14 @@ server <- function(input, output) {
 
   output$data <- DT::renderDataTable({
     air_quality %>%
-      select(year, state, county, fips, AQI, pollutant, arithmetic_mean,
-             air_quality_index, units_of_measure) %>%
+      select(year, state, county, fips, AQI, air_quality_index, pollutant, 
+             arithmetic_mean, units_of_measure) %>%
       rename(Year = year, State = state, County = county, Unit = units_of_measure,
-             "Pollution Level" = arithmetic_mean,
-             "Air Quality Category" = air_quality_index,"Air Quality Index" = AQI,
-             Pollutant = pollutant, "FIPS Code" = fips) %>%
-      arrange(Year, State, "FIPS Code", Pollutant)
+             `Pollution Level` = arithmetic_mean,
+             `Air Quality Category` = air_quality_index, `Air Quality Index` = AQI,
+             Pollutant = pollutant, `FIPS Code` = fips) %>%
+      arrange(Year, State, `FIPS Code`, Pollutant)
+
   })
 
 }
