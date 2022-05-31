@@ -17,7 +17,7 @@ The Clean Air Act of 1970 was the first to establish National Ambient Air Qualit
 
 Despite these standards, and the US' resulting pollution reduction, the exacerbation of climate change and relentless use of fossil fuels in industry and commerce has continued to negatively impact the levels of certain pollutants in the US.
 
-In order to visualize the trend in pollutnat levels and overall ari quality in the US, we decided to 
+In order to visualize the trend in pollutant levels and overall air quality in the US, we decided to 
 
 
 ## Interactive Plot

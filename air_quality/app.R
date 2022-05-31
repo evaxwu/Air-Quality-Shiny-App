@@ -7,16 +7,16 @@ library(urbnmapr)
 # Load data --------------------------------------------------------------------
 air_quality <- read_csv("data/AllStates_overall.csv", show_col_types = FALSE) %>%
   mutate(fips = paste0(state_code, county_code), # add fips code
-         `Air Quality Index` = factor(`Air Quality Index`, 
+         `Air Quality Index` = factor(`Air Quality Index`,
                                levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups",
-                                          "Unhealthy", "Very Unhealthy", "Hazardous"))) %>% 
+                                          "Unhealthy", "Very Unhealthy", "Hazardous"))) %>%
   arrange(year, state, county, pollutant) %>%
   distinct()
 
 colnames(air_quality)[colnames(air_quality) == 'Air Quality Index'] <- 'air_quality_index'
 
 pollutant_choices <- air_quality$pollutant %>% unique()
-state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana", 
+state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana",
                    "Nevada", "New Mexico", "Oregon", "Utah", "Washington", "Wyoming")
 
 aqi_grade <- c('Good', 'Moderate', 'Unhealthy for Sensitive Groups',
@@ -45,10 +45,10 @@ states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # merge air quality data and sf using fips code
 counties_air <- left_join(counties_sf, air_quality,
-                           by = c("county_fips" = "fips")) 
+                           by = c("county_fips" = "fips"))
 
 counties_aqi <- left_join(counties_sf, aqi_county,
-                          by = c("county_fips" = "fips")) 
+                          by = c("county_fips" = "fips"))
 
 WEST.SF <- counties_sf %>% filter(state_name=="California"|
                                   state_name=="Arizona"|
@@ -218,16 +218,16 @@ server <- function(input, output) {
 
   })
 
-  
+
   # [tab 4: the aqi line graph]===================
-  
+
   output$aqi_state_text <- reactive({
     paste0("You've selected ", length(input$state_aqi), " state(s). Showing their air
           quality measured by AQI (Air Quality Index) across years...")
   })
-  
+
   output$aqi_line_plot <- renderPlot({
-    
+
     # verify only 8 or fewer states selected for optimal interpretation
     validate(
       need(
@@ -235,7 +235,7 @@ server <- function(input, output) {
         message = "Please do not select more than 8 states."
       )
     )
-    
+
     aqi_state %>%
       filter(state %in% input$state_aqi) %>%
       ggplot(aes(year, mean_aqi, color = state)) +
@@ -245,23 +245,23 @@ server <- function(input, output) {
            subtitle = paste0("measured by AQI (Air Quality Index)"),
            x = "Year", y = "AQI",
            color = "State")
-    
+
   })
-  
+
   # [tab 5: the aqi map]===================
-  
+
   output$aqi_map_text <- reactive({
     paste("This map shows the aqi index by grade across the U.S. in", input$year)
   })
-  
+
   output$aqi_map_plot <- renderPlot({
-    
+
     unit <- air_quality %>%
       filter(year == input$year) %>%
       ungroup() %>%
       select(units_of_measure) %>%
       unique()
-    
+
     counties_air %>%
       filter(year == input$year) %>%
       ggplot() +
@@ -274,19 +274,21 @@ server <- function(input, output) {
                                              air quality measured by ",
                                              rlang::as_name(input$pollutant))),
             legend.position = "left")
-    
+
   })
-  
+
   # [tab 6: the table]==========================
 
   output$data <- DT::renderDataTable({
     air_quality %>%
-      select(year, state, county, fips, AQI, AQI_category, pollutant, 
-             arithmetic_mean, units_of_measure) %>%
-      rename(unit = units_of_measure,
-             `pollution level` = arithmetic_mean,
-             `Air Quality Category` = `Air Quality Index`) %>%
-      arrange(year, state, fips, pollutant)
+      select(year, state, county, fips, AQI, pollutant, arithmetic_mean,
+             air_quality_index, units_of_measure) %>%
+      arrange(year, state, fips, pollutant) %>%
+      rename(Year = year, State = state, County = county, Unit = units_of_measure,
+             "Pollution Level" = arithmetic_mean,
+             "Air Quality Category" = air_quality_index,"Air Quality Index" = AQI,
+             Pollutant = pollutant) %>%
+      select(!fips)
   })
 
 }
