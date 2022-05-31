@@ -4,8 +4,6 @@ output: github_document
 ---
 This folder contains the code we used to create our shiny app. 
 
-Graphs we are trying to make:
-
 ```{r}
 
 ```

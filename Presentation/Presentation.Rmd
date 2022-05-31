@@ -13,21 +13,32 @@ library(shiny)
 ```
 
 # Background
+
+---
+
 The Clean Air Act of 1970 was the first to establish National Ambient Air Quality Standards, which have remained essentially unchanged since then.
 
 Despite these standards, and the US' resulting pollution reduction, the exacerbation of climate change and relentless use of fossil fuels in industry and commerce has continued to negatively impact the levels of certain pollutants in the US.
 
 In order to visualize the trend in pollutant levels and overall air quality in the US, we decided to 
+make a shiny app with a chloropleth map of the western US over time, colored by pollutant/AQI levels, and some line plots of pollution/AQI levels over time.
 
+---
+
+# Process
+
+---
+
+We first 
 
 ## Interactive Plot
 
 ```{r load-shiny, echo = FALSE}
 
-shinyAppFile(
-  appFile = "~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/air_quality/app.R",
-  options = list(width = "100%", height = 700)
-)
+# shinyAppFile(
+#   appFile = "shiny/app.R",
+#   options = list(width = "100%", height = 700)
+# )
 
 ```
 
