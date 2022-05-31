@@ -277,11 +277,11 @@ server <- function(input, output) {
     air_quality %>%
       select(year, state, county, fips, AQI, pollutant, arithmetic_mean,
              air_quality_index, units_of_measure) %>%
-      arrange(year, state, fips, pollutant) %>%
       rename(Year = year, State = state, County = county, Unit = units_of_measure,
              "Pollution Level" = arithmetic_mean,
              "Air Quality Category" = air_quality_index,"Air Quality Index" = AQI,
-             Pollutant = pollutant)
+             Pollutant = pollutant, "FIPS Code" = fips) %>%
+      arrange(Year, State, "FIPS Code", Pollutant)
   })
 
 }
