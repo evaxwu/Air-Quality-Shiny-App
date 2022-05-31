@@ -2,7 +2,7 @@ Project 2
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
-# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Sunday.
+# Note: We have the App with a snippet of data in our repo now. Our draft will be updated on Saturday.
 
 This file explains the structure of the repository. This file will
 include our write-up.
@@ -23,6 +23,9 @@ include our write-up.
     [app.R](air_quality/app.R) document consisting of the code used to
     build the app and a [data](air_quality/data) folder consisting of
     the data we used to make visualizations in the app.
+
+-   [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the
+    link to our shiny app website
 
 -   We have a README.Rmd and README.md file for each folder. These files
     explain the structure of the repository. The README files in the

@@ -199,10 +199,7 @@ server <- function(input, output) {
            fill = "AQI Levels") +
       theme_void() +
       theme(legend.position = "left")
-
-      #scale_fill_manual(air_quality_index, values = c("green", "yellow",
-      #"orange", "red", "purple", "maroon")) +
-
+    
   })
 
   # [tab 3: the line graph]===================
@@ -274,14 +271,14 @@ server <- function(input, output) {
 
   output$data <- DT::renderDataTable({
     air_quality %>%
-      select(year, state, county, fips, AQI, pollutant, arithmetic_mean,
-             air_quality_index, units_of_measure) %>%
-      arrange(year, state, fips, pollutant) %>%
+      select(year, state, county, fips, AQI, air_quality_index, pollutant, 
+             arithmetic_mean, units_of_measure) %>%
       rename(Year = year, State = state, County = county, Unit = units_of_measure,
              `Pollution Level` = arithmetic_mean,
              `Air Quality Category` = air_quality_index, `Air Quality Index` = AQI,
-             Pollutant = pollutant) %>%
-      select(!fips)
+             Pollutant = pollutant, `FIPS Code` = fips) %>%
+      arrange(Year, State, `FIPS Code`, Pollutant)
+
   })
 
 }
