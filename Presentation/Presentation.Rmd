@@ -25,7 +25,7 @@ In order to visualize the trend in pollutant levels and overall air quality in t
 ```{r load-shiny, echo = FALSE}
 
 shinyAppFile(
-  appFile = "~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/air_quality/app.R",
+  appFile = "shiny/app.R",
   options = list(width = "100%", height = 700)
 )
 
