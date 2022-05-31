@@ -165,7 +165,7 @@ server <- function(input, output) {
       geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
       coord_sf(datum = NA) +
       scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"),
-                          low = "green", high = "maroon",
+                          low = "lightyellow", high = "darkred",
                           na.value = "white") +
       theme_void() +
       theme(plot.title = element_text(paste0("Map showing county-level
@@ -174,20 +174,20 @@ server <- function(input, output) {
             legend.position = "left")
 
   })
-  
+
   # [tab 2: the aqi map]===================
-  
+
   output$aqi_map_text <- reactive({
-    paste0("This map shows the aqi index by grade across 
+    paste0("This map shows the aqi index by grade across
            Western U.S. in ", input$year_aqi)
   })
-  
+
   output$aqi_map_plot <- renderPlot({
-    
+
     # create a color scale
-    cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange", 
+    cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
               "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
-    
+
     counties_air %>%
       filter(year == input$year_aqi) %>%
       ggplot() +
@@ -199,13 +199,13 @@ server <- function(input, output) {
            fill = "AQI Levels") +
       theme_void() +
       theme(legend.position = "left")
-      
+
       #scale_fill_manual(air_quality_index, values = c("green", "yellow",
       #"orange", "red",
       #"purple", "maroon")) +
-      
+
   })
-  
+
   # [tab 3: the line graph]===================
 
   output$state_text <- reactive({

@@ -3447,7 +3447,7 @@ AllStates_overall6 <- AllStates_overall |>
 AllStates_overall7 <- AllStates_overall |>
   filter(year > 1991)
 
-AllStates_overall8 <- rbind(AllStates_overall5, AllStates_overall6, 
+AllStates_overall8 <- rbind(AllStates_overall6, AllStates_overall5, 
                             AllStates_overall7)
 
 AllStates_overall9 <- AllStates_overall8 |>
