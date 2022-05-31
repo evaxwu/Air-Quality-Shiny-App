@@ -3427,7 +3427,7 @@ PM10_index <- tibble(con2aqi("pm10", con = AllStates_overall3$PM10_rd, type = NU
   select(!row)
 
 indices <- cbind(Ozone_index, CO_index, NO2_index, SO2_index,PM10_index)
-  
+
 indices2 <- indices |>
   mutate(AQI = rowMaxs(as.matrix(indices))) |>
   # Only keep the new collapsed column
@@ -3436,7 +3436,7 @@ indices2 <- indices |>
 AllStates_overall5 <- AllStates_overall2 |>
   select(!AQI) |>
   cbind(indices2) |>
-  pivot_longer(c(CO,NO2,Ozone,SO2,PM10), names_to = "pollutant", 
+  pivot_longer(c(CO,NO2,Ozone,SO2,PM10), names_to = "pollutant",
                values_to = "arithmetic_mean") |>
   drop_na() |>
   select(!row)
@@ -3447,14 +3447,17 @@ AllStates_overall6 <- AllStates_overall |>
 AllStates_overall7 <- AllStates_overall |>
   filter(year > 1991)
 
-AllStates_overall8 <- rbind(AllStates_overall6, AllStates_overall5, 
+AllStates_overall8 <- rbind(AllStates_overall6, AllStates_overall5,
                             AllStates_overall7)
 
 AllStates_overall9 <- AllStates_overall8 |>
   mutate("Air Quality Index" = sapply(AQI, AQI_rank_fn)) |>
   select(!Air.Quality.Index)
 
+AllStates_overall10 <- AllStates_overall9 |>
+  mutate(county_code = formatC(county_code, width = 3, format = "d", flag = "0"),
+         state_code = formatC(state_code, width = 2, format = "d", flag = "0"))
 
-write_csv(AllStates_overall9, "AllStates_overall.csv")
+write_csv(AllStates_overall10, "AllStates_overall.csv")
 ```
 
