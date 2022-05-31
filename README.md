@@ -11,11 +11,10 @@ include our write-up.
     knitted MarkDown documents which contain the information in this
     proposal.
 
--   [data_cleaning_description](data_cleaning_description) folder. This
-    folder contains RMarkDown documents used to load, examine, and
-    wrangle data from the RAQSAPI and to load data from other sources,
-    the csv files of data loaded from other sources, as well as the
-    README file consisting of the codebook.
+-   [data](data) folder. This folder contains RMarkDown documents used
+    to load, examine, and wrangle data from the RAQSAPI and to load data
+    from other sources, the csv files of data loaded from other sources,
+    as well as the README file consisting of the codebook.
 
 -   [shiny](shiny) folder. This folder contains an
     [app.R](air_quality/app.R) document consisting of the code used to
