@@ -266,7 +266,7 @@ server <- function(input, output) {
   # [tab 5: the aqi map]===================
 
   output$aqi_map_text <- reactive({
-    paste("This map shows the aqi index by grade across the U.S. in", input$year)
+    paste("This map shows the aqi index by grade across the U.S. in", input$year_aqi)
   })
   
   output$aqi_map_plot <- renderPlot({
