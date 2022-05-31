@@ -2,8 +2,7 @@ Project 2
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
-This file explains the structure of the repository. This file will
-include our write-up.
+This file explains the structure of the repository.
 
 ## Repo organization
 
@@ -16,6 +15,8 @@ include our write-up.
     from other sources, the csv files of data loaded from other sources,
     as well as the README file consisting of the codebook.
 
+-   [write-up](write-up) folder. This folder contains our write-up.
+
 -   [shiny](shiny) folder. This folder contains an
     [app.R](air_quality/app.R) document consisting of the code used to
     build the app and a [data](air_quality/data) folder consisting of
@@ -24,6 +25,5 @@ include our write-up.
 -   [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the
     link to our shiny app website
 
--   We have a README.Rmd and README.md file for each folder. These files
-    explain the structure of the repository. The README files in the
-    main directory will include our write-up.
+-   Some folders have a README.Rmd and README.md file that describe each
+    file in the folder.
