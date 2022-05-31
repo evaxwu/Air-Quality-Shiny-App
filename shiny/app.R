@@ -200,10 +200,6 @@ server <- function(input, output) {
       theme_void() +
       theme(legend.position = "left")
 
-      #scale_fill_manual(air_quality_index, values = c("green", "yellow",
-      #"orange", "red",
-      #"purple", "maroon")) +
-
   })
 
   # [tab 3: the line graph]===================
