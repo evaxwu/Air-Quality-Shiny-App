@@ -281,8 +281,7 @@ server <- function(input, output) {
       rename(Year = year, State = state, County = county, Unit = units_of_measure,
              "Pollution Level" = arithmetic_mean,
              "Air Quality Category" = air_quality_index,"Air Quality Index" = AQI,
-             Pollutant = pollutant) %>%
-      select(!fips)
+             Pollutant = pollutant)
   })
 
 }
