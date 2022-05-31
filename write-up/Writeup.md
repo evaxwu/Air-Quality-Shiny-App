@@ -13,9 +13,36 @@ Furred Flies - Jimin Han, Eva Wu, Caleb Weis
 Our project contains 4 main tabs containing different information on air
 pollution.
 
-## Map
+## Map & Line Plot
 
 In this tab, we study the choropleth map of the US west coast states for
-1971-2020
+1971-2021, on various air pollutants. One caveat is that we lack a great
+deal of data from the 70s, especially for more rural counties. NO2 and
+Ozone are almost restrained to data from California in the 70s, while
+the PM measures were not collected in this dataset. But looking at the
+maps in general, we can see that the reported counties generally have
+high levels of pollutant concentration.
+
+We can get a more holistic view of the trend if we look at the line plot
+tab. Most notably, we can see that SO2, NO2, and CO have a similar trend
+in which the values for the 70s are extremely high and they converge to
+a lower level as we approach the 21st century. We hypothesize that this
+trend may be caused from the sheer lack of volume of data in the 70s
+(Most likely), and also that the decreasing trend represents an adapting
+mechanism for the counties after the policy enactment in 1970. PM10,
+although collected from the mid-1980s, have a similar downward trend. On
+the other hand, PM 2.5 generally stays constant throughout the years
+except for an outlier in California. Ozone had a very unique trend in
+which all states experience a dip in ozone levels in the 1980s. More
+specifically, the levels fall from around 0.06 Parts per Million to less
+than 0.04, going back up to 0.06 at the beginning of the 90s. After the
+90s, we note a rather constant level of Ozone despite fluctuations in
+year-by-year level.
+
+## AQI Map
+
+## Line Plot
+
+## AQI Line Plot
 
 # Conclusion
