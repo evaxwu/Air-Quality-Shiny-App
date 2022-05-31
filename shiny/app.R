@@ -6,10 +6,11 @@ library(urbnmapr)
 
 # Load data --------------------------------------------------------------------
 air_quality <- read_csv("data/AllStates_overall.csv", show_col_types = FALSE) %>%
+  rename(air_quality_index = `Air Quality Index`) %>%
   mutate(fips = paste0(state_code, county_code), # add fips code
-         `Air Quality Index` = factor(`Air Quality Index`, 
-                               levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups",
-                                          "Unhealthy", "Very Unhealthy", "Hazardous"))) %>% 
+         air_quality_index = factor(air_quality_index, 
+                             levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups",
+                                        "Unhealthy", "Very Unhealthy", "Hazardous"))) %>% 
   arrange(year, state, county, pollutant) %>%
   distinct()
 
@@ -98,8 +99,9 @@ ui <- fluidPage(
             animate = TRUE, # add animation button beside slider
             sep = "" # remove the comma separating thousands
           ),
-          textOutput(outputId = "map_text_aqi"),
-          plotOutput("map_aqi")
+          textOutput(outputId = "aqi_map_text"),
+          br(),
+          plotOutput("aqi_map_plot")
         ),
         # tab 3======
         tabPanel(
@@ -173,14 +175,26 @@ server <- function(input, output) {
 
   })
   
-  # [tab 2: the AQI map] ========================
+  # [tab 2: the AQI map]===================
   
-  output$map_text_aqi <- reactive({
-    paste("This map shows the air quality across the U.S. in", input$year,
-          "measured by AQI (Air Quality Index)")
+  output$aqi_map_text <- reactive({
+    paste0("This map shows the AQI (Air Quality Index) by level across 
+           Western U.S. in ", input$year_aqi)
   })
   
-  output$map_aqi <- renderPlot({
+  output$aqi_map_plot <- renderPlot({
+    
+    counties_air %>%
+      filter(year == input$year_aqi) %>%
+      ggplot() +
+      geom_sf(data = WEST.SF) +
+      geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+      coord_sf(datum = NA) +
+      scale_fill_brewer() +
+      theme_void() +
+      labs(title = "Map showing county-level air quality measured by AQI", 
+           fill = "AQI Levels") +
+      theme(legend.position = "left")
     
   })
 
