@@ -3,8 +3,8 @@ title: "Data Description"
 output: github_document
 ---
 
-```{r setup, include = FALSE, message = FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 library(tidyverse)
 library(knitr)
 ```
@@ -21,7 +21,7 @@ We have chosen to use data spanning the past 50 years for all 50 US states and W
 
 The following is a snippet of the data:
 
-```{r data, echo = FALSE}
+```{r data}
 df <- read_csv("AllStates_overall.csv") %>%
   select(year, state, state_code, county, county_code, AQI, `Air Quality Index`, 
          pollutant, arithmetic_mean, units_of_measure)
