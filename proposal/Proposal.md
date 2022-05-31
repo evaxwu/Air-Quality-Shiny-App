@@ -10,20 +10,19 @@ whether our visualization will be interactive, animated, or both).
 
 ## Loading Dataset
 
+| year | state      | county  | county_code | state_code | AQI | pollutant | units_of_measure  | arithmetic_mean | Air Quality Index |
+|-----:|:-----------|:--------|:------------|:-----------|----:|:----------|:------------------|----------------:|:------------------|
+| 1971 | California | Alameda | 001         | 06         |  67 | CO        | Parts per million |        2.719067 | Moderate          |
+| 1971 | California | Alameda | 001         | 06         |  67 | NO2       | Parts per billion |       69.150943 | Moderate          |
+| 1971 | California | Alameda | 001         | 06         |  67 | SO2       | Parts per billion |        3.448786 | Moderate          |
+| 1971 | California | Butte   | 007         | 06         |  39 | CO        | Parts per million |        1.773927 | Good              |
+| 1971 | California | Butte   | 007         | 06         |  39 | NO2       | Parts per billion |       40.564972 | Good              |
+
 Our data is explained further below and in the README in the data
 folder. It includes 42 columns (although we will certainly cut this down
 as soon as we know more about the data), and will include hundreds of
 thousands of rows once we have loaded all of the necessary data for each
 state (50 years of air quality data x 50 states + DC is a lot of data).
-
-| state_code | county_code | site_number | parameter_code | poc | latitude | longitude | datum | parameter                | sample_duration | sample_duration_code | sample_duration_type | pollutant_standard | year | quarter | units_of_measure            | event_type | observation_count | observation_percent | arithmetic_mean | minimum_value | maximum_value | quarterly_criteria_met | actual_days_gt_std | estimated_days_gt_std | valid_samples | valid_day_count | scheduled_samples | percent_days | percent_one_value | monitoring_agency_code | monitoring_agency                        | local_site_name | address          | state      | county   | city   | tribal_code | tribal_land | cbsa_code | cbsa                      | date_of_last_change |
-|:-----------|:------------|:------------|:---------------|----:|---------:|----------:|:------|:-------------------------|:----------------|:---------------------|:---------------------|:-------------------|-----:|:--------|:----------------------------|:-----------|------------------:|:--------------------|----------------:|:--------------|:--------------|:-----------------------|-------------------:|:----------------------|:--------------|:----------------|:------------------|-------------:|:------------------|:-----------------------|:-----------------------------------------|:----------------|:-----------------|:-----------|:---------|:-------|:------------|:------------|:----------|:--------------------------|:--------------------|
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 24-hour 2006  | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                  0 | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 Annual 2006   | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                 NA | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 24-hour 2012  | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                  0 | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 Annual 2012   | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                 NA | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 24-hour 1997  | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                  0 | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
-| 06         | 023         | 1002        | 88101          |   1 | 40.80178 | -124.1621 | WGS84 | PM2.5 - Local Conditions | 24 HOUR         | 7                    | O                    | PM25 Annual 1997   | 2011 | 1       | Micrograms/cubic meter (LC) | No Events  |                29 | 97.0                |          6.6276 | 1.3           | 16.5          | Y                      |                 NA | NA                    | 29.0          | 29.0            | 30.0              |         32.2 | 32.0              | 0086                   | Bay Area Air Quality Management District | Eureka I Street | I STREET, EUREKA | California | Humboldt | Eureka | NA          | NA          | 21700     | Eureka-Arcata-Fortuna, CA | 2021-11-08          |
 
 ## Description of our goals
 
@@ -86,16 +85,16 @@ clicked, will animate the graph across the years.
 
 -   Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle
     data into desired structure and calculate AQI Scores from data
-    (Caleb). Create README files (Jimin). Edit codebook (Eva). Learn how
-    to use Shiny (everyone).
+    (Caleb). Create README files & repo structure (Jimin). Edit codebook
+    (Eva). Learn how to use Shiny (everyone).
 
--   Week 2 (May 19-May 25): Construct visualization of data using Shiny
-    (everyone). Consider adding layers depicting change in prevalence of
-    potentially contributing factors to poor Air Quality over time
-    (everyone).
+-   Week 2 (May 19-May 25): Construct Shiny shell (Eva). Consider adding
+    layers depicting change in prevalence of potentially contributing
+    factors to poor Air Quality over time (everyone).
 
--   Week 3 (May 26-June 1): Complete Write-Up and Presentation (using
-    xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
+-   Week 3 (May 26-June 1): Finish up maps (Jimin) and line graphs
+    (Eva). Complete Write-Up and Presentation (using xaringen or Shiny)
+    (everyone). Rehearse Presentation (everyone).
 
 ## Repo organization
 

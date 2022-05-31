@@ -25,5 +25,5 @@ This file explains the structure of the repository.
 -   [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the
     link to our shiny app website
 
--   Some folders have a README.Rmd and README.md file that describe each
-    file in the folder.
+-   All folders have a README.Rmd and README.md file that describe the
+    content of the folder.
