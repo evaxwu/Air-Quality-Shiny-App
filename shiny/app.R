@@ -268,29 +268,36 @@ server <- function(input, output) {
   output$aqi_map_text <- reactive({
     paste("This map shows the aqi index by grade across the U.S. in", input$year)
   })
-
+  
   output$aqi_map_plot <- renderPlot({
-
+    
     unit <- air_quality %>%
-      filter(year == input$year) %>%
+      filter(year == input$year_aqi) %>%
       ungroup() %>%
       select(units_of_measure) %>%
       unique()
-
+    
+    cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange", 
+              "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
+    
     counties_air %>%
-      filter(year == input$year) %>%
+      filter(year == input$year_aqi) %>%
       ggplot() +
       geom_sf(data = WEST.SF) +
       geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+      scale_fill_manual(values = cols) +
       coord_sf(datum = NA) +
-      scale_fill_brewer() +
       theme_void() +
       theme(plot.title = element_text(paste0("Map showing county-level
                                              air quality measured by ",
                                              rlang::as_name(input$pollutant))),
             legend.position = "left")
-
   })
+  
+  
+  #scale_fill_manual(air_quality_index, values = c("green", "yellow",
+                                                  #"orange", "red",
+                                                  #"purple", "maroon")) +
 
   # [tab 6: the table]==========================
 
