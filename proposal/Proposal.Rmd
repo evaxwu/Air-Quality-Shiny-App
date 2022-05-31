@@ -14,22 +14,17 @@ We have chosen to create an interactive and/or animated spatio-temporal visualiz
 knitr::opts_chunk$set(message = FALSE, warning = FALSE, echo = FALSE)
 library(RAQSAPI)
 library(tidyverse)
+library(knitr)
 library(stringr)
 library(sjmisc)
 ```
 
 
 ```{r load-data}
-RAQSAPI::aqs_credentials("hanjim83@gmail.com", "dunmouse24")
-# Loading California state data
-# Data for California from 2011 to 2021 - only year matters in bdate/edate variables
-CA1 <- aqs_quarterlysummary_by_state(parameter = c("88502", "42101", "42602", "44201", "81102", "88101", "42401"), bdate = as.Date("20110101", format = "%Y%m%d"), edate = as.Date("20210101", format = "%Y%m%d"), "06")
+kable(head(read_csv("/Users/eva/Desktop/proj2-furred-flies/data/AllStates_overall.csv"), 5))
 ```
 
 Our data is explained further below and in the README in the data folder. It includes 42 columns (although we will certainly cut this down as soon as we know more about the data), and will include hundreds of thousands of rows once we have loaded all of the necessary data for each state (50 years of air quality data x 50 states + DC is a lot of data).
-
-`r knitr::kable(head(CA1))` 
- 
  
 ## Description of our goals
 
@@ -42,11 +37,11 @@ Our primary goal is to then use this data in order to construct an interactive a
 
 ## Weekly Plan of Attack:
  
-* Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle data into desired structure and calculate AQI Scores from data (Caleb). Create README files (Jimin). Edit codebook (Eva). Learn how to use Shiny (everyone).
+* Week 1 (May 12-May 18): Load all necessary data (Caleb). Wrangle data into desired structure and calculate AQI Scores from data (Caleb). Create README files & repo structure (Jimin). Edit codebook (Eva). Learn how to use Shiny (everyone).
 
-* Week 2 (May 19-May 25): Construct visualization of data using Shiny (everyone). Consider adding layers depicting change in prevalence of potentially contributing factors to poor Air Quality over time (everyone).
+* Week 2 (May 19-May 25): Construct Shiny shell (Eva). Consider adding layers depicting change in prevalence of potentially contributing factors to poor Air Quality over time (everyone).
 
-* Week 3 (May 26-June 1): Complete Write-Up and Presentation (using xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
+* Week 3 (May 26-June 1): Finish up maps (Jimin) and line graphs (Eva). Complete Write-Up and Presentation (using xaringen or Shiny) (everyone). Rehearse Presentation (everyone).
 
 ## Repo organization 
 

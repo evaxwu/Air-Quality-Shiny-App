@@ -2,8 +2,7 @@ Project 2
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
-This file explains the structure of the repository. This file will
-include our write-up.
+This file explains the structure of the repository.
 
 ## Repo organization
 
@@ -11,11 +10,12 @@ include our write-up.
     knitted MarkDown documents which contain the information in this
     proposal.
 
--   [data_cleaning_description](data_cleaning_description) folder. This
-    folder contains RMarkDown documents used to load, examine, and
-    wrangle data from the RAQSAPI and to load data from other sources,
-    the csv files of data loaded from other sources, as well as the
-    README file consisting of the codebook.
+-   [data](data) folder. This folder contains RMarkDown documents used
+    to load, examine, and wrangle data from the RAQSAPI and to load data
+    from other sources, the csv files of data loaded from other sources,
+    as well as the README file consisting of the codebook.
+
+-   [write-up](write-up) folder. This folder contains our write-up.
 
 -   [shiny](shiny) folder. This folder contains an
     [app.R](air_quality/app.R) document consisting of the code used to
@@ -25,6 +25,5 @@ include our write-up.
 -   [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the
     link to our shiny app website
 
--   We have a README.Rmd and README.md file for each folder. These files
-    explain the structure of the repository. The README files in the
-    main directory will include our write-up.
+-   All folders have a README.Rmd and README.md file that describe the
+    content of the folder.

@@ -1,4 +1,4 @@
-Readme
+Presentation folder
 ================
 
 This folder contains our group’s proposal for the project. We present

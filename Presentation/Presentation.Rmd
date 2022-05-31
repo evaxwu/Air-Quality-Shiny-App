@@ -8,10 +8,7 @@ runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-knitr::opts_chunk$set(warning = FALSE)
-knitr::opts_chunk$set(error = FALSE)
-knitr::opts_chunk$set(message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, error = FALSE)
 
 # knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(comment = FALSE))
 library(shiny)
@@ -46,11 +43,15 @@ head(a)
 
 ---
 
-- We used the urbnmapr package in order to create maps with US state and county outlines, and added layers so that only the Western US, our focus for this project, would be shown.
+- `urbnmapr` package: get sf for maps with US state and county outlines
 
-- We then filled by `arithmetic_mean`, the variable encoding average yearly pollution levels by county, using a continuous, self-created scale, or by Air Quality Category, a discrete variable that we created by taking direct inspiration from the globally standardized Air Quality Index categories, and using the once again globally standardized discrete color scale for the Air Quality Category chloropleth map.
+- added layers to show air quality on top of map contour
 
-- We used the tabPanel method to create multiple tabs in our app, also including tabs for line plots of pollutants and of Air Quality Index (the value which informs the Air Quality Categorization) over time, and a tab for the dataset itself, in a readable format.
+- filled by `arithmetic_mean` (average yearly pollution levels by county, using a continuous, self-created scale) or by Air Quality Category (a discrete variable inspired by the globally standardized Air Quality Index categories), and using the globally standardized discrete color scale for the Air Quality Category choropleth map
+
+- tabPanel method to create multiple tabs in our app
+
+- tabs for map of pollutants, map of AQI, line plots of pollutants, and of AQI over time, and a tab for the dataset itself, in a readable format
 
 # The website
 
