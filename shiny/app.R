@@ -64,10 +64,6 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      hr(),
-      "Hi hi! Interested in checking out air quality trends in Western US?
-      Hope the following graphs help!",
-      br(), br(),
       tabsetPanel(
         # tab 1======
         tabPanel(
@@ -133,7 +129,29 @@ ui <- fluidPage(
           plotOutput("aqi_line_plot")
         ),
         # tab 5======
-        tabPanel("Data", DT::dataTableOutput(outputId = "data"))
+        tabPanel("Data", DT::dataTableOutput(outputId = "data")),
+        # tab 6======
+        tabPanel("About", 
+                 br(),
+                 "In this project, we drew upon data from the US EPA and created 
+                 4 visualizations to explore the levels of air pollution, and 
+                 the Air Quality Index values, throughout Western U.S. since 1971.",
+                 br(), br(),
+                 "This app contains 6 tabs. On the left side, you could select 
+                 the pollutant type you are interested in. The 'Map' tab shows the 
+                 county-level map of air quality measured by your selected 
+                 pollutant concentration. The slider under the tab will allow you to
+                 select a year or animate using the 'play' button. The map shows
+                 a choropleth, using color to indicate pollutant level. Higher 
+                 levels of pollutant means worse air quality. The 'AQI Map' tab 
+                 shows the county-level map of air quality measured by AQI levels. 
+                 You could also use the slider to select or animate through years. 
+                 The 'Line Plot' tab shows the air quality measured by your selected 
+                 pollutant types. You can select up to 8 states to compare their 
+                 air quality trends across years. The 'AQI Line Plot' tab similarly 
+                 shows the air quality trend of selected states across years, 
+                 but measure by AQI. The 'Data' tab shows the data frame we used 
+                 to plot our graphs.")
       )
     )
   )
@@ -233,7 +251,6 @@ server <- function(input, output) {
            color = "State")
 
   })
-
 
   # [tab 4: the aqi line graph]===================
 
