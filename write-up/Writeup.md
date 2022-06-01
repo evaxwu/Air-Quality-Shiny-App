@@ -40,7 +40,11 @@ rows, and so given our time constraint for this project, we believe that
 limiting our analysis was the correct choice.
 
 After loading all of the data, we had to put it through numerous rounds
+<<<<<<< HEAD
 of adjustment, filtering, merging, summarizing, pivoting, etc. in order
+=======
+of adjustment, filtering, merging, summarizing pivoting, etc. in order
+>>>>>>> main
 to get to our final dataset. There were too many steps to explain them
 all here, but I will try to explain the sequence of steps that led to
 constructing the Air Quality Category variable, which led to the
@@ -67,7 +71,11 @@ standard color scale (most of this information is from
 [this](https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf)
 document published by the US EPA). all of these transformations were
 saved into the dataset, enabling us to finally use this dataset to
+<<<<<<< HEAD
 produce the final chloropleth map in the way described below.
+=======
+produce the final choropleth map in the way described below.
+>>>>>>> main
 
 We did experience some setbacks with the data, and make one assumption.
 The assumption that we made was that no state kept better air quality
@@ -93,6 +101,7 @@ during this period, and whether they were caused by an issue in the data
 or by real-world phenomena. More research would need to be done in order
 to solve this mystery.
 
+<<<<<<< HEAD
 Here is a snippet of the data:
 
 ``` r
@@ -127,6 +136,8 @@ by our function.
 | arithmetic_mean   | Arithmetic mean of pollutant concentration.                                                          |
 | units_of_measure  | Units of measure of pollutant concentration.                                                         |
 
+=======
+>>>>>>> main
 # Approach
 
 # Analysis
@@ -164,6 +175,38 @@ year-by-year level.
 
 In these tabs, we provide a similar set of maps and line graphs for AQI,
 which is a more general and intuitive measure of pollution derived from
+<<<<<<< HEAD
 the pollutants we presented before.
+=======
+the pollutants we presented before. In the 1970s, where many of the
+values were fluctuating, we see a wide range of colors in the map. We
+see that amid mostly green(good) AQI levels, there are a mix of moderate
+and unhealthy levels near urban areas. However, beginning from 1980, the
+map turns almost completely yellow (moderate) and stays that way until
+2021.
 
-# Conclusion
+If we translate this trend to the AQI line plot, we can see that
+similarly yet much less extremely than our previous plots, the AQI level
+dips to the 50-60 range in the 1980s. One possible explanation is that
+this is due to the influence of the Ozone plot, because Ozone is more
+weighted when computing AQI. Reflecting how most pollutants converge to
+a lower level after the 1990s, we can rationalize the fact that AQI
+stabilizes to the moderate range (51-100).
+>>>>>>> main
+
+## Conclusion
+
+Although the variance in the AQI levels are very small for all of the
+states, we can also note that the ‘larger’ and ‘more urban’ states tend
+to have slightly higher values of AQI. Those states are California,
+Arizona, Colorado, and Utah. We cannot generalize these results to any
+normative statements about air pollution or climate change. Also, we
+have some constraints due to a lack of data in certain regions. Thus, it
+will be reasonable to use this website as a supplementary source
+providing a convenient mapping of how pollutant levels have changed
+across time. If we were given more time and resources, we would first
+expand our computing power to obtain data that covers missing counties
+and the rest of the states. Then, we would also try to link this data
+with possible causes or results affected by the data, such as
+individuals’ health data or the correlation with how ‘urban’ some
+counties are.

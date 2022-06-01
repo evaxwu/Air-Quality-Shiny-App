@@ -2,8 +2,121 @@
 title: "Shiny folder"
 output: github_document
 ---
-This folder contains the code we used to create our shiny app. 
 
-```{r}
+This folder contains the code we used to create our shiny app. Below are the sample graphs of some placeholder years and pollutants.
 
+```{r setup, include = FALSE}
+library(tidyverse)
+library(urbnmapr)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
+
+```{r data, included = FALSE}
+air_quality <- read_csv("data/AllStates_overall.csv", show_col_types = FALSE) %>%
+  rename(air_quality_index = `Air Quality Index`) %>%
+  mutate(fips = paste0(state_code, county_code), # add fips code
+         air_quality_index = factor(air_quality_index,
+                             levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups",
+                                        "Unhealthy", "Very Unhealthy", "Hazardous"))) %>%
+  arrange(year, state, county, pollutant) %>%
+  distinct()
+
+state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana",
+                   "Nevada", "New Mexico", "Oregon", "Utah", "Washington", "Wyoming")
+
+# summarize air quality by state
+air_quality_state <- air_quality %>%
+  group_by(year, state, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
+
+# summarize aqi by state
+aqi_state <- air_quality %>%
+  group_by(year, state) %>%
+  summarize(mean_aqi = mean(AQI, na.rm = TRUE))
+
+# summarize aqi by county
+aqi_county <- air_quality %>%
+  group_by(year, state, county, fips) %>%
+  summarize(mean_aqi = mean(AQI, na.rm = TRUE)) %>%
+  unique()
+
+# import sf for the county-level map
+counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
+# only needed if plotting state-level map:
+states_sf <- get_urbn_map(map = "states", sf = TRUE)
+
+# merge air quality data and sf using fips code
+counties_air <- left_join(counties_sf, air_quality,
+                           by = c("county_fips" = "fips"))
+
+counties_aqi <- left_join(counties_sf, aqi_county,
+                          by = c("county_fips" = "fips"))
+
+# extract sf info for Western US states only
+WEST.SF <- counties_sf %>% filter(state_name %in% state_choices)
+```
+Here is the map of PM2.5 data in 2010.
+
+```{r tab1}
+counties_air %>%
+  filter(year == 2010 & pollutant == "PM2.5") %>%
+  ggplot() +
+  geom_sf(data = WEST.SF) +
+  geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
+  coord_sf(datum = NA) +
+  scale_fill_gradient(name = paste0("Pollution level \n(*unit*)"),
+                      low = "lightyellow", high = "darkred",
+                      na.value = "white") +
+  theme_void() +
+  theme(plot.title = element_text("Map showing county-level
+                                         air quality measured by PM 2.5"),
+        legend.position = "left")
+```
+
+Here is the AQI map in 2010.
+
+```{r tab2}
+# create a color scale
+cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
+          "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
+
+counties_air %>%
+  filter(year == 1971) %>%
+  ggplot() +
+  geom_sf(data = WEST.SF) +
+  geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+  scale_fill_manual(values = cols) +
+  coord_sf(datum = NA) +
+  labs(title = "Map showing county-level air quality measured by AQI",
+       fill = "AQI Levels") +
+  theme_void() +
+  theme(legend.position = "left")
+```
+
+Here is a line graph of California.
+
+```{r tab3}
+input_state <- c("California", "Arizona", "Washington")
+air_quality_state %>%
+  filter(state %in% input_state & pollutant == "PM2.5") %>%
+  ggplot(aes(year, air_qual_year, color = state)) +
+  geom_line() +
+  theme_light() +
+  labs(title = paste0("Air Quality Across Years in", paste0(input_state, collapse = ", ")),
+       subtitle = paste0("measured by PM2.5"),
+       x = "Year", y = paste0("Polution level (*unit*)"),
+       color = "State")
+```
+
+```{r tab4}
+aqi_state %>%
+  filter(state %in% input_state) %>%
+  ggplot(aes(year, mean_aqi, color = state)) +
+  geom_line() +
+  theme_light() +
+  labs(title = paste0("Air Quality Across Years in ", paste(input_state, collapse = ", ")),
+       subtitle = paste0("measured by AQI (Air Quality Index)"),
+       x = "Year", y = "AQI",
+       color = "State")
+```
+
