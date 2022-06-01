@@ -29,15 +29,15 @@ the next time increment of data, quarterly, but that too proved
 time-intensive, and so we ultimately decided to use yearly increments.
 In addition, due to the sheer amount of data that we still had to load,
 we decided to focus our analysis on the 11 states which make up the
-‘Western’ region of the United States, a decision primarily informed by
+“Western” region of the United States, a decision primarily informed by
 the knowledge that this is the most wildfire-prone region in the United
 States ([Supporting data from
 Statista](https://www.statista.com/statistics/217072/number-of-fires-and-acres-burned-due-to-us-wildfires/)).
 Even taking all of these pragmatic decisions into account, each dataset
-that we loaded—a 10-year increment of yearly county-level data from one
-of the 11 states in our analysis—could be up to tens of thousands of
-rows, and so given our time constraint for this project, we believe that
-limiting our analysis was the correct choice.
+that we loaded — a 10-year increment of yearly county-level data from
+one of the 11 states in our analysis — could be up to tens of thousands
+of rows, and so given our time constraint for this project, we believe
+that limiting our analysis was the correct choice.
 
 After loading all of the data, we had to put it through numerous rounds
 of adjustment, filtering, merging, summarizing, pivoting, etc. in order
@@ -134,49 +134,58 @@ by our function.
 
 # Approach
 
-Justification of approach: The chosen approach and visualizations are
-clearly explained and justified. (3 points)
+In order to explore air quality, we created a shiny app containing
+choropleth maps and line plots. Our app contains 4 main tabs containing
+different information on air pollution. We chose to make a shiny app
+because it allows us to not only present, but also interact with the
+visualizations by selecting features such as pollutant type, year, and
+state.
+
+We used the sidebar layout so that we can select pollutant type in the
+sidebar and click on tabs on the main panel to see different plots. We
+put pollutant on the side rather than under each tab because it is a
+common variable for both the map (1st tab) and the line plot (3rd tab).
+We included different types of pollutants because each pollutant might
+indicate a different reason for or consequence of the corresponding air
+pollution level. Including them will better inform expert users about
+air quality. We also included the AQI plots, because this will allow us
+to better communicate the overall air quality to laypeople without
+getting into too much details in pollutant types.
+
+The 1st and 2nd tabs contain a choropleth map of western US states and
+counties which allows users to compare air quality across space. The 1st
+tab filled by selected pollutants, and the 2nd tab filled by AQI levels.
+The slider allows users to select a specific year or animate across
+years. The maps show the county-level choropleth of pollution levels in
+the selected year accordingly.
+
+The 3rd and 4th tabs contain a line plot of air quality against year
+which allows users to explore change of air quality across time and to
+compare air quality trends across states. The 3rd tab has pollutant
+levels on the y-axis as the air quality measure, and the 4th tab has AQI
+on the y-axis as the air quality measure. The selectize input allows
+users to select up to 8 out of the 11 states, while preventing them from
+mispelling or inputing states that were not in our data. The limit of 8
+states is for clarity of graphing. We don’t want to cram the graph with
+too many lines, which hinders our ability of interpretation. The
+resulting line graphs show the trend of air pollution levels of the
+selected states across years.
+
+The 5th tab contains a table showing our data. It has a search box on
+the top, allowing users to type in any year, county, state, pollutant,
+etc. values if they want to check on the data containing the typed value
+only.
+
+The 6th tab contains a brief intro of our project and our app, so that
+users can better navigate it.
 
 # Code & Visualizations
 
+The shiny app can be accessed using [this
+link](https://hanjimin06.shinyapps.io/furredflies/).
+
 Below are the sample graphs of placeholder year 2010 and placeholder
 pollutant PM2.5.
-
-``` r
-state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana",
-                   "Nevada", "New Mexico", "Oregon", "Utah", "Washington", "Wyoming")
-
-# summarize air quality by state
-air_quality_state <- air_quality %>%
-  group_by(year, state, pollutant, units_of_measure) %>%
-  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
-
-# summarize aqi by state
-aqi_state <- air_quality %>%
-  group_by(year, state) %>%
-  summarize(mean_aqi = mean(AQI, na.rm = TRUE))
-
-# summarize aqi by county
-aqi_county <- air_quality %>%
-  group_by(year, state, county, fips) %>%
-  summarize(mean_aqi = mean(AQI, na.rm = TRUE)) %>%
-  unique()
-
-# import sf for the county-level map
-counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
-# only needed if plotting state-level map:
-states_sf <- get_urbn_map(map = "states", sf = TRUE)
-
-# merge air quality data and sf using fips code
-counties_air <- left_join(counties_sf, air_quality,
-                           by = c("county_fips" = "fips"))
-
-counties_aqi <- left_join(counties_sf, aqi_county,
-                          by = c("county_fips" = "fips"))
-
-# extract sf info for Western US states only
-WEST.SF <- counties_sf %>% filter(state_name %in% state_choices)
-```
 
 Here is the map of PM2.5 data in 2010.
 
@@ -185,15 +194,15 @@ counties_air %>%
   filter(year == 2010 & pollutant == "PM2.5") %>%
   ggplot() +
   geom_sf(data = WEST.SF) +
-  geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
+  geom_sf(mapping = aes(fill = arithmetic_mean), color = "grey40") +
   coord_sf(datum = NA) +
-  scale_fill_gradient(name = paste0("Pollution level \n(*unit*)"),
+  scale_fill_gradient(name = paste0("Pollution level \n(Micrograms/cubic meter (LC))"),
                       low = "lightyellow", high = "darkred",
                       na.value = "white") +
   theme_void() +
-  theme(plot.title = element_text("Map showing county-level
-                                         air quality measured by PM 2.5"),
-        legend.position = "left")
+  labs(title = "Map showing county-level air quality in 2010",
+       subtitle = "measured by PM 2.5") +
+  theme(legend.position = "left")
 ```
 
 ![](writeup_files/figure-gfm/tab1-1.png)<!-- -->
@@ -205,11 +214,11 @@ Here is the AQI map in 2010.
 cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
           "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
 
-counties_air %>%
+counties_aqi %>%
   filter(year == 2010) %>%
   ggplot() +
   geom_sf(data = WEST.SF) +
-  geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+  geom_sf(mapping = aes(fill = air_quality_index), color = "grey40") +
   scale_fill_manual(values = cols) +
   coord_sf(datum = NA) +
   labs(title = "Map showing county-level air quality measured by AQI",
@@ -229,9 +238,9 @@ air_quality_state %>%
   ggplot(aes(year, air_qual_year, color = state)) +
   geom_line() +
   theme_light() +
-  labs(title = paste0("Air Quality Across Years in", paste0(input_state, collapse = ", ")),
+  labs(title = paste0("Air Quality Across Years in ", paste0(input_state, collapse = ", ")),
        subtitle = paste0("measured by PM2.5"),
-       x = "Year", y = paste0("Polution level (*unit*)"),
+       x = "Year", y = "Polution level (Micrograms/cubic meter (LC))",
        color = "State")
 ```
 
@@ -255,49 +264,42 @@ aqi_state %>%
 
 # Discussion
 
-Our project contains 4 main tabs containing different information on air
-pollution.
-
 ## Map & Line Plot
 
-In this tab, we study the choropleth map of the US west coast states for
-1971-2021, on various air pollutants. One caveat is that we lack a great
-deal of data from the 70s, especially for more rural counties. NO2 and
-Ozone are almost restrained to data from California in the 70s, while
-the PM measures were not collected in this dataset. But looking at the
-maps in general, we can see that the reported counties generally have
-high levels of pollutant concentration.
+In the 1st tab, we study the choropleth map of the US west coast states
+for 1971-2021, on various air pollutants. One caveat is that we lack a
+great deal of data from the 70s, especially for more rural counties. NO2
+and Ozone are almost restrained to data from California in the 70s,
+while the PM measures were not collected in this dataset. But looking at
+the maps in general, we can see that the reported counties generally
+have high levels of pollutant concentration.
 
-We can get a more holistic view of the trend if we look at the line plot
-tab. Most notably, we can see that SO2, NO2, and CO have a similar trend
-in which the values for the 70s are extremely high and they converge to
-a lower level as we approach the 21st century. We hypothesize that this
-trend may be caused from the sheer lack of volume of data in the 70s
-(Most likely), and also that the decreasing trend represents an adapting
-mechanism for the counties after the policy enactment in 1970. PM10,
-although collected from the mid-1980s, have a similar downward trend. On
-the other hand, PM 2.5 generally stays constant throughout the years
-except for an outlier in California. Ozone had a very unique trend in
-which all states experience a dip in ozone levels in the 1980s. More
-specifically, the levels fall from around 0.06 Parts per Million to less
-than 0.04, going back up to 0.06 at the beginning of the 90s. After the
-90s, we note a rather constant level of Ozone despite fluctuations in
-year-by-year level.
+We can get a more holistic view of the trend if we look at the 2nd tab
+containing the line plot. Most notably, we can see that SO2, NO2, and CO
+have a similar trend in which the values for the 70s are extremely high
+and they converge to a lower level as we approach the 21st century. We
+hypothesize that this trend may be caused from the sheer lack of volume
+of data in the 70s (Most likely), and also that the decreasing trend
+represents an adapting mechanism for the counties after the policy
+enactment in 1970. PM10, although collected from the mid-1980s, have a
+similar downward trend. On the other hand, PM2.5 generally stays
+constant throughout the years except for an outlier in California. Ozone
+had a very unique trend in which all states experience a dip in ozone
+levels in the 1980s. More specifically, the levels fall from around 0.06
+Parts per Million to less than 0.04, going back up to 0.06 at the
+beginning of the 90s. After the 90s, we note a rather constant level of
+Ozone despite fluctuations in year-by-year level.
 
 ## AQI Map & AQI Line Plot
 
-In these tabs, we provide a similar set of maps and line graphs for AQI,
-which is a more general and intuitive measure of pollution derived from
-the pollutants we presented before.
-
-In these tabs, we provide a similar set of maps and line graphs for AQI,
-which is a more general and intuitive measure of pollution derived from
-the pollutants we presented before. In the 1970s, where many of the
-values were fluctuating, we see a wide range of colors in the map. We
-see that amid mostly green(good) AQI levels, there are a mix of moderate
-and unhealthy levels near urban areas. However, beginning from 1980, the
-map turns almost completely yellow (moderate) and stays that way until
-2021.
+In the 3rd and 4th tabs respectively, we provide a similar set of maps
+and line graphs for AQI, which is a more general and intuitive measure
+of pollution derived from the pollutants we presented before. In the
+1970s, where many of the values were fluctuating, we see a wide range of
+colors in the map. We see that amid mostly green (good) AQI levels,
+there are a mix of moderate and unhealthy levels near urban areas.
+However, beginning from 1980, the map turns almost completely yellow
+(moderate) and stays that way until 2021.
 
 If we translate this trend to the AQI line plot, we can see that
 similarly yet much less extremely than our previous plots, the AQI level
