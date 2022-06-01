@@ -2,8 +2,10 @@ Data Description
 ================
 
 This is the README document explaining the data that we will use for
-this project. The [data-cleaning-prep.Rmd](data-cleaning-prep.Rmd) file
-outlines the code we used to obtain and clean the data.
+this project. The [data_cleaning.Rmd](data_cleaning.Rmd) file outlines
+the code we used to obtain and clean the data. The
+[AllStates_overall.csv](AllStates_overall.csv) file contains the cleaned
+copy of data we used to create the plots.
 
 Our data is from the US EPA Air Quality System API, called RAQSAPI and
 developed by Clinton Mccrowey, a Physical Scientist with the US EPA.
@@ -38,7 +40,7 @@ generate our data, we used the function
 (begin date), “edate” (end date), and “state_FIPS” (state FIPS code)
 variables.
 
-The following is a snippet of the data:
+The following is a snippet of the raw data:
 
 | year | state      | state_code | county  | county_code | AQI | Air Quality Index | pollutant | arithmetic_mean | units_of_measure  |
 |-----:|:-----------|:-----------|:--------|:------------|----:|:------------------|:----------|----------------:|:------------------|

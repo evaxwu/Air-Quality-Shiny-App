@@ -1,4 +1,4 @@
-Project 2
+Exploring Air Quality in Western U.S. since 1971
 ================
 Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 
@@ -15,6 +15,9 @@ This file explains the structure of the repository.
     from other sources, the csv files of data loaded from other sources,
     as well as the README file consisting of the codebook.
 
+-   [Presentation](Presentation) folder. This folder contains code we
+    used to create our slides.
+
 -   [write-up](write-up) folder. This folder contains our write-up.
 
 -   [shiny](shiny) folder. This folder contains an
@@ -22,8 +25,8 @@ This file explains the structure of the repository.
     build the app and a [data](air_quality/data) folder consisting of
     the data we used to make visualizations in the app.
 
--   [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the
-    link to our shiny app website
+-   [This](https://hanjimin06.shinyapps.io/furredflies/) is the link to
+    our shiny app website.
 
 -   Each folder has a README.Rmd and README.md file that describe the
     content of the folder.
