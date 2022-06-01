@@ -30,14 +30,13 @@ aqi_state <- air_quality %>%
 
 # summarize aqi by county
 aqi_county <- air_quality %>%
-  group_by(year, state, county, fips) %>%
-  summarize(mean_aqi = mean(AQI, na.rm = TRUE)) %>%
+  select(year, state, county, fips, AQI, air_quality_index) %>%
   unique()
 
 # import sf for the county-level map
 counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
 # only needed if plotting state-level map:
-states_sf <- get_urbn_map(map = "states", sf = TRUE)
+#states_sf <- get_urbn_map(map = "states", sf = TRUE)
 
 # merge air quality data and sf using fips code
 counties_air <- left_join(counties_sf, air_quality,
@@ -162,16 +161,14 @@ server <- function(input, output) {
       filter(year == input$year & pollutant == input$pollutant) %>%
       ggplot() +
       geom_sf(data = WEST.SF) +
-      geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
+      geom_sf(mapping = aes(fill = arithmetic_mean), color = "grey40") +
       coord_sf(datum = NA) +
       scale_fill_gradient(name = paste0("Pollution level \n(", unit, ")"),
-                          low = "lightyellow", high = "darkred",
-                          na.value = "white") +
+                          low = "lightyellow", high = "darkred") +
       theme_void() +
-      theme(plot.title = element_text(paste0("Map showing county-level
-                                             air quality measured by ",
-                                             rlang::as_name(input$pollutant))),
-            legend.position = "left")
+      labs(title = paste0("Map showing county-level air quality measured by ",
+                          rlang::as_name(input$pollutant))) +
+      theme(legend.position = "left")
 
   })
 
@@ -186,13 +183,13 @@ server <- function(input, output) {
 
     # create a color scale
     cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
-              "Unhealthy" = "red", "Very Unhealthy" = "maroon", "Hazardous" = "purple")
+              "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
 
-    counties_air %>%
+    counties_aqi %>%
       filter(year == input$year_aqi) %>%
       ggplot() +
       geom_sf(data = WEST.SF) +
-      geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+      geom_sf(mapping = aes(fill = air_quality_index), color = "grey40") +
       scale_fill_manual(values = cols) +
       coord_sf(datum = NA) +
       labs(title = "Map showing county-level air quality measured by AQI",
