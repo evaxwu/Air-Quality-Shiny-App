@@ -4,11 +4,6 @@ author: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
 output: github_document
 ---
 
-```{r setup, include=FALSE}
-library(tidyverse)
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 This file explains the structure of the repository.
 
 ## Repo organization 
@@ -23,4 +18,4 @@ This file explains the structure of the repository.
 
 * [Shiny app](https://hanjimin06.shinyapps.io/furredflies/) is the link to our shiny app website
 
-* All folders have a README.Rmd and README.md file that describe the content of the folder.
+* Each folder has a README.Rmd and README.md file that describe the content of the folder.
