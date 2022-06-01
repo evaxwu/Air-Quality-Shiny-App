@@ -16,7 +16,7 @@ This file explains the structure of the repository.
 
 * [write-up](write-up) folder. This folder contains our write-up.
 
-* [shiny](shiny) folder. This folder contains an [app.R](air_quality/app.R) document consisting of the code used to build the app and a [data](air_quality/data) folder consisting of the data we used to make visualizations in the app. 
+* [shiny](shiny) folder. This folder contains an [app.R](shiny/app.R) document consisting of the code used to build the app and a [data](shiny/data) folder consisting of the data we used to make visualizations in the app. 
 
 * [This](https://hanjimin06.shinyapps.io/furredflies/) is the link to our shiny app website.
 
