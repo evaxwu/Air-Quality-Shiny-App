@@ -176,6 +176,9 @@ the top, allowing users to type in any year, county, state, pollutant,
 etc. values if they want to check on the data containing the typed value
 only.
 
+The 6th tab contains a brief intro of our project and our app, so that
+users can better navigate it.
+
 # Code & Visualizations
 
 The shiny app can be accessed using [this
