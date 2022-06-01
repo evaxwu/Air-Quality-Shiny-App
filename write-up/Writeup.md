@@ -136,10 +136,10 @@ by our function.
 
 In order to explore air quality, we created a shiny app containing
 choropleth maps and line plots. Our app contains 4 main tabs containing
-different information on air pollution. We chose to make a shiny app
-because it allows us to not only present, but also interact with the
-visualizations by selecting features such as pollutant type, year, and
-state.
+different information on air pollution plus a tab for data and intro. We
+chose to make a shiny app because it allows us to not only present, but
+also interact with the visualizations by selecting features such as
+pollutant type, year, and state.
 
 We used the sidebar layout so that we can select pollutant type in the
 sidebar and click on tabs on the main panel to see different plots. We
@@ -205,7 +205,7 @@ counties_air %>%
   theme(legend.position = "left")
 ```
 
-![](writeup_files/figure-gfm/tab1-1.png)<!-- -->
+![](Writeup_files/figure-gfm/tab1-1.png)<!-- -->
 
 Here is the AQI map in 2010.
 
@@ -227,7 +227,7 @@ counties_aqi %>%
   theme(legend.position = "left")
 ```
 
-![](writeup_files/figure-gfm/tab2-1.png)<!-- -->
+![](Writeup_files/figure-gfm/tab2-1.png)<!-- -->
 
 Here is a sample line graph for PM2.5 levels of some selected states.
 
@@ -244,7 +244,7 @@ air_quality_state %>%
        color = "State")
 ```
 
-![](writeup_files/figure-gfm/tab3-1.png)<!-- -->
+![](Writeup_files/figure-gfm/tab3-1.png)<!-- -->
 
 Here is a sample line graph for AQI of some selected states.
 
@@ -260,7 +260,7 @@ aqi_state %>%
        color = "State")
 ```
 
-![](writeup_files/figure-gfm/tab4-1.png)<!-- -->
+![](Writeup_files/figure-gfm/tab4-1.png)<!-- -->
 
 # Discussion
 
