@@ -1,4 +1,5 @@
 library(shiny)
+library(rsconnect)
 library(tidyverse)
 library(shinythemes)
 library(thematic)
@@ -151,7 +152,9 @@ ui <- fluidPage(
                  air quality trends across years. The 'AQI Line Plot' tab similarly 
                  shows the air quality trend of selected states across years, 
                  but measure by AQI. The 'Data' tab shows the data frame we used 
-                 to plot our graphs.")
+                 to plot our graphs. Feel free to enter year, state name, county 
+                 name, or pollutant type that you are interested in in the search 
+                 box to filter the data accordingly.")
       )
     )
   )
