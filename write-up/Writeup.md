@@ -6,16 +6,16 @@ Furred Flies - Jimin Han, Eva Wu, Caleb Weis
 
 For our project, we wanted to explore the levels of air pollution, and
 the Air Quality Index values, throughout the United States during the
-years after the passage of the Clean air Act of 1970, which brought with
+years after the passage of the Clean Air Act of 1970, which brought with
 it the first establishment of National Ambient Air Quality Standards,
 which have remained largely constant since then. In order to answer this
 question, we drew upon data from the US EPA. More details on this
-dataset can be found below, and in the ‘data’ folder of our repo. For
-our visualization, we decided to make an interactive shiny app with a
-chloropleth map of the western US over time, colored by pollutant/AQI
-levels, and some line plots of pollution/AQI levels over time. More
-details on our app can be found below, and the app itself is in the
-‘shiny’ folder of our repo.
+dataset can be found below, and in the “data” folder of our repo. For
+our visualizations, we decided to make an interactive shiny app with a
+choropleth map of the western US over time, colored by county-level
+pollution/AQI levels, and some line plots of state-level pollution/AQI
+levels over time. More details on our app can be found below, and the
+app itself is in the “shiny” folder of our repo.
 
 # Data
 
@@ -40,11 +40,7 @@ rows, and so given our time constraint for this project, we believe that
 limiting our analysis was the correct choice.
 
 After loading all of the data, we had to put it through numerous rounds
-<<<<<<< HEAD
 of adjustment, filtering, merging, summarizing, pivoting, etc. in order
-=======
-of adjustment, filtering, merging, summarizing pivoting, etc. in order
->>>>>>> main
 to get to our final dataset. There were too many steps to explain them
 all here, but I will try to explain the sequence of steps that led to
 constructing the Air Quality Category variable, which led to the
@@ -71,11 +67,7 @@ standard color scale (most of this information is from
 [this](https://www.airnow.gov/sites/default/files/2020-05/aqi-technical-assistance-document-sept2018.pdf)
 document published by the US EPA). all of these transformations were
 saved into the dataset, enabling us to finally use this dataset to
-<<<<<<< HEAD
-produce the final chloropleth map in the way described below.
-=======
 produce the final choropleth map in the way described below.
->>>>>>> main
 
 We did experience some setbacks with the data, and make one assumption.
 The assumption that we made was that no state kept better air quality
@@ -101,24 +93,28 @@ during this period, and whether they were caused by an issue in the data
 or by real-world phenomena. More research would need to be done in order
 to solve this mystery.
 
-<<<<<<< HEAD
 Here is a snippet of the data:
 
 ``` r
-df <- read_csv("/Users/eva/Desktop/proj2-furred-flies/data/AllStates_overall.csv") %>%
-  select(year, state, state_code, county, county_code, AQI, `Air Quality Index`, 
-         pollutant, arithmetic_mean, units_of_measure)
+air_quality <- read_csv("/Users/eva/Desktop/proj2-furred-flies/data/AllStates_overall.csv", show_col_types = FALSE) %>%
+  rename(air_quality_index = `Air Quality Index`) %>%
+  mutate(fips = paste0(state_code, county_code), # add fips code
+         air_quality_index = factor(air_quality_index,
+                             levels = c("Good", "Moderate", "Unhealthy for Sensitive Groups",
+                                        "Unhealthy", "Very Unhealthy", "Hazardous"))) %>%
+  arrange(year, state, county, pollutant) %>%
+  distinct()
 
-kable(head(df, 5))
+kable(head(air_quality, 5))
 ```
 
-| year | state      | state_code | county  | county_code | AQI | Air Quality Index | pollutant | arithmetic_mean | units_of_measure  |
-|-----:|:-----------|:-----------|:--------|:------------|----:|:------------------|:----------|----------------:|:------------------|
-| 1971 | California | 06         | Alameda | 001         |  67 | Moderate          | CO        |        2.719067 | Parts per million |
-| 1971 | California | 06         | Alameda | 001         |  67 | Moderate          | NO2       |       69.150943 | Parts per billion |
-| 1971 | California | 06         | Alameda | 001         |  67 | Moderate          | SO2       |        3.448786 | Parts per billion |
-| 1971 | California | 06         | Butte   | 007         |  39 | Good              | CO        |        1.773927 | Parts per million |
-| 1971 | California | 06         | Butte   | 007         |  39 | Good              | NO2       |       40.564972 | Parts per billion |
+| year | state   | county   | county_code | state_code | AQI | pollutant | units_of_measure  | arithmetic_mean | air_quality_index              | fips  |
+|-----:|:--------|:---------|:------------|:-----------|----:|:----------|:------------------|----------------:|:-------------------------------|:------|
+| 1971 | Arizona | Cochise  | 003         | 04         |  33 | SO2       | Parts per billion |       23.268075 | Good                           | 04003 |
+| 1971 | Arizona | Coconino | 005         | 04         |   2 | SO2       | Parts per billion |        0.733333 | Good                           | 04005 |
+| 1971 | Arizona | Gila     | 007         | 04         | 115 | SO2       | Parts per billion |       48.123255 | Unhealthy for Sensitive Groups | 04007 |
+| 1971 | Arizona | Greenlee | 011         | 04         | 107 | SO2       | Parts per billion |       88.596000 | Unhealthy for Sensitive Groups | 04011 |
+| 1971 | Arizona | Maricopa | 013         | 04         | 247 | CO        | Parts per million |        3.478998 | Very Unhealthy                 | 04013 |
 
 The following is a high-level description of an example tibble generated
 by our function.
@@ -136,11 +132,128 @@ by our function.
 | arithmetic_mean   | Arithmetic mean of pollutant concentration.                                                          |
 | units_of_measure  | Units of measure of pollutant concentration.                                                         |
 
-=======
->>>>>>> main
 # Approach
 
-# Analysis
+Justification of approach: The chosen approach and visualizations are
+clearly explained and justified. (3 points)
+
+# Code & Visualizations
+
+Below are the sample graphs of placeholder year 2010 and placeholder
+pollutant PM2.5.
+
+``` r
+state_choices <- c("Arizona", "California", "Colorado", "Idaho", "Montana",
+                   "Nevada", "New Mexico", "Oregon", "Utah", "Washington", "Wyoming")
+
+# summarize air quality by state
+air_quality_state <- air_quality %>%
+  group_by(year, state, pollutant, units_of_measure) %>%
+  summarize(air_qual_year = mean(arithmetic_mean, na.rm = TRUE))
+
+# summarize aqi by state
+aqi_state <- air_quality %>%
+  group_by(year, state) %>%
+  summarize(mean_aqi = mean(AQI, na.rm = TRUE))
+
+# summarize aqi by county
+aqi_county <- air_quality %>%
+  group_by(year, state, county, fips) %>%
+  summarize(mean_aqi = mean(AQI, na.rm = TRUE)) %>%
+  unique()
+
+# import sf for the county-level map
+counties_sf <- get_urbn_map(map = "counties", sf = TRUE)
+# only needed if plotting state-level map:
+states_sf <- get_urbn_map(map = "states", sf = TRUE)
+
+# merge air quality data and sf using fips code
+counties_air <- left_join(counties_sf, air_quality,
+                           by = c("county_fips" = "fips"))
+
+counties_aqi <- left_join(counties_sf, aqi_county,
+                          by = c("county_fips" = "fips"))
+
+# extract sf info for Western US states only
+WEST.SF <- counties_sf %>% filter(state_name %in% state_choices)
+```
+
+Here is the map of PM2.5 data in 2010.
+
+``` r
+counties_air %>%
+  filter(year == 2010 & pollutant == "PM2.5") %>%
+  ggplot() +
+  geom_sf(data = WEST.SF) +
+  geom_sf(mapping = aes(fill = arithmetic_mean), color = NA) +
+  coord_sf(datum = NA) +
+  scale_fill_gradient(name = paste0("Pollution level \n(*unit*)"),
+                      low = "lightyellow", high = "darkred",
+                      na.value = "white") +
+  theme_void() +
+  theme(plot.title = element_text("Map showing county-level
+                                         air quality measured by PM 2.5"),
+        legend.position = "left")
+```
+
+![](writeup_files/figure-gfm/tab1-1.png)<!-- -->
+
+Here is the AQI map in 2010.
+
+``` r
+# create a color scale
+cols <- c("Good" = "green", "Moderate" = "yellow", "Unhealthy for Sensitive Groups" = "orange",
+          "Unhealthy" = "red", "Very Unhealthy" = "purple", "Hazardous" = "maroon")
+
+counties_air %>%
+  filter(year == 2010) %>%
+  ggplot() +
+  geom_sf(data = WEST.SF) +
+  geom_sf(mapping = aes(fill = air_quality_index), color = NA) +
+  scale_fill_manual(values = cols) +
+  coord_sf(datum = NA) +
+  labs(title = "Map showing county-level air quality measured by AQI",
+       fill = "AQI Levels") +
+  theme_void() +
+  theme(legend.position = "left")
+```
+
+![](writeup_files/figure-gfm/tab2-1.png)<!-- -->
+
+Here is a sample line graph for PM2.5 levels of some selected states.
+
+``` r
+input_state <- c("California", "Arizona", "Washington")
+air_quality_state %>%
+  filter(state %in% input_state & pollutant == "PM2.5") %>%
+  ggplot(aes(year, air_qual_year, color = state)) +
+  geom_line() +
+  theme_light() +
+  labs(title = paste0("Air Quality Across Years in", paste0(input_state, collapse = ", ")),
+       subtitle = paste0("measured by PM2.5"),
+       x = "Year", y = paste0("Polution level (*unit*)"),
+       color = "State")
+```
+
+![](writeup_files/figure-gfm/tab3-1.png)<!-- -->
+
+Here is a sample line graph for AQI of some selected states.
+
+``` r
+aqi_state %>%
+  filter(state %in% input_state) %>%
+  ggplot(aes(year, mean_aqi, color = state)) +
+  geom_line() +
+  theme_light() +
+  labs(title = paste0("Air Quality Across Years in ", paste(input_state, collapse = ", ")),
+       subtitle = paste0("measured by AQI (Air Quality Index)"),
+       x = "Year", y = "AQI",
+       color = "State")
+```
+
+![](writeup_files/figure-gfm/tab4-1.png)<!-- -->
+
+# Discussion
 
 Our project contains 4 main tabs containing different information on air
 pollution.
@@ -175,9 +288,10 @@ year-by-year level.
 
 In these tabs, we provide a similar set of maps and line graphs for AQI,
 which is a more general and intuitive measure of pollution derived from
-<<<<<<< HEAD
 the pollutants we presented before.
-=======
+
+In these tabs, we provide a similar set of maps and line graphs for AQI,
+which is a more general and intuitive measure of pollution derived from
 the pollutants we presented before. In the 1970s, where many of the
 values were fluctuating, we see a wide range of colors in the map. We
 see that amid mostly green(good) AQI levels, there are a mix of moderate
@@ -192,12 +306,11 @@ this is due to the influence of the Ozone plot, because Ozone is more
 weighted when computing AQI. Reflecting how most pollutants converge to
 a lower level after the 1990s, we can rationalize the fact that AQI
 stabilizes to the moderate range (51-100).
->>>>>>> main
 
-## Conclusion
+# Conclusion
 
 Although the variance in the AQI levels are very small for all of the
-states, we can also note that the ‘larger’ and ‘more urban’ states tend
+states, we can also note that the “larger” and “more urban” states tend
 to have slightly higher values of AQI. Those states are California,
 Arizona, Colorado, and Utah. We cannot generalize these results to any
 normative statements about air pollution or climate change. Also, we
@@ -208,5 +321,5 @@ across time. If we were given more time and resources, we would first
 expand our computing power to obtain data that covers missing counties
 and the rest of the states. Then, we would also try to link this data
 with possible causes or results affected by the data, such as
-individuals’ health data or the correlation with how ‘urban’ some
+individuals’ health data or the correlation with how “urban” some
 counties are.
