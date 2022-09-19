@@ -1,19 +1,18 @@
 ---
 title: "Air Quality Over Time in the Western US,\n1971-2021"
 subtitle: "An Exploration by Caleb Weis, Eva Wu, and Jimin Han"
-author: "MACS: Data Visualization"
 output: ioslides_presentation
-date: '31 May 2022'
+date: "May 31 2022"
 runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, error = FALSE)
-
-# knitr::opts_chunk$set(tidy = TRUE, tidy.opts = list(comment = FALSE))
 library(shiny)
 library(tidyverse)
 library(knitr)
+library(here)
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, error = FALSE)
 ```
 
 # Background
@@ -34,7 +33,7 @@ make a shiny app with a chloropleth map of the western US over time, colored by 
 - We first obtained data from the US EPA Air Quality System API, called RAQSAPI and developed by Clinton Mccrowey, a Physical Scientist with the US EPA. After a lot of data wrangling, we were able to create the following dataset:
 
 ```{r load-data}
-a <- read_csv("~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/data/AllStates_overall.csv")
+a <- read_csv(here("data", "AllStates_overall.csv"))
 
 head(a)
 ```
@@ -60,7 +59,7 @@ head(a)
 ```{r load-shiny}
 
 shinyAppFile(
-  appFile = "~/SchoolworkSpring22/MACS/projects/proj2-furred-flies/shiny/app.R",
+  appFile = here("shiny", "app.R"),
   options = list(width = "100%", height = 700)
 )
 
