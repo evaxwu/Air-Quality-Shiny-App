@@ -1,6 +1,6 @@
 ---
 title: "Exploring Air Quality in Western U.S. since 1971"
-authors: Furred Flies (Caleb Weis, Eva Wu, Jimin Han)
+author: "Caleb Weis, Eva Wu, and Jimin Han"
 output: github_document
 ---
 
@@ -205,7 +205,7 @@ Although the variance in the AQI levels are very small for all of the states, we
 
 * [data](data) folder. This folder contains RMarkDown documents used to load, examine, and wrangle data from the RAQSAPI and to load data from other sources, the csv files of data loaded from other sources, as well as the README file consisting of the codebook.
 
-* [presentation](presentation) folder. This folder contains code we used to create our slides.
+* [Presentation](Presentation) folder. This folder contains code we used to create our slides.
 
 * [shiny](shiny) folder. This folder contains an [app.R](shiny/app.R) document consisting of the code used to build the app and a [data](shiny/data) folder consisting of the data we used to make visualizations in the app. 
 

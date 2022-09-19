@@ -1,5 +1,6 @@
 Exploring Air Quality in Western U.S. since 1971
 ================
+Caleb Weis, Eva Wu, and Jimin Han
 
 ## Introduction
 
@@ -323,7 +324,7 @@ counties are.
     from other sources, the csv files of data loaded from other sources,
     as well as the README file consisting of the codebook.
 
--   [presentation](presentation) folder. This folder contains code we
+-   [Presentation](Presentation) folder. This folder contains code we
     used to create our slides.
 
 -   [shiny](shiny) folder. This folder contains an [app.R](shiny/app.R)
