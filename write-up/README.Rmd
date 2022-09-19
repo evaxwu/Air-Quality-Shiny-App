@@ -1,5 +1,0 @@
----
-title: "Write-up folder"
-output: github_document
----
-This folder contains our write-up. See the Rmd file [here](Writeup.Rmd) and the md file [here](Writeup.md).
